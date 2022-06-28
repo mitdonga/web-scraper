@@ -15,6 +15,17 @@ gem "puma", "~> 5.0"
 # Use Unicorn as the app server
 gem 'unicorn'
 
+# For soft deleting records
+gem 'discard'
+
+# parse URL content
+# gem 'kimurai'
+gem "kimurai", github: "n-studio/kimuraframework", branch: "dev/ruby-3"
+gem "rbcat", github: "deanopound/rbcat", branch: "fix/support-ruby-3.0.0"
+
+# For graphQL API client
+gem 'graphql-client'
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
@@ -45,7 +56,6 @@ gem 'rack-cors'
 gem 'rufus-scheduler'
 
 gem 'graphql' #, '1.12.16'
-# gem 'graphiql-rails'
 
 gem 'mina' #, '~> 1.2', '>= 1.2.4'
 
@@ -57,5 +67,9 @@ end
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem 'graphiql-rails'
+  gem 'seed_dump'
 end
 
+
+gem "sidekiq", "~> 6.5"

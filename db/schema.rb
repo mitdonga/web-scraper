@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_18_064127) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_19_061639) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,10 +35,38 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_18_064127) do
     t.bigint "algo_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
     t.index ["algo_id"], name: "index_links_on_algo_id"
     t.index ["city_id"], name: "index_links_on_city_id"
+    t.index ["discarded_at"], name: "index_links_on_discarded_at"
+  end
+
+  create_table "scrape_entries", force: :cascade do |t|
+    t.bigint "scrape_id", null: false
+    t.bigint "link_id", null: false
+    t.integer "status"
+    t.integer "retries"
+    t.string "notes"
+    t.text "raw_hash"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["link_id"], name: "index_scrape_entries_on_link_id"
+    t.index ["scrape_id"], name: "index_scrape_entries_on_scrape_id"
+  end
+
+  create_table "scrapes", force: :cascade do |t|
+    t.string "name"
+    t.datetime "scheduled_at"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.integer "status"
+    t.integer "retries"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "links", "algos"
   add_foreign_key "links", "cities"
+  add_foreign_key "scrape_entries", "links"
+  add_foreign_key "scrape_entries", "scrapes"
 end
