@@ -6,7 +6,7 @@ require 'mina/rbenv'
 
 set :application_name, 'sprape'
 set :domain, 'sprapeql.compli.tech'
-set :deploy_to, '/sites/ror/sparkapt/sprape'
+set :deploy_to, '/sites/ror/sparkapt/sprapeql'
 set :repository, 'git@github.com:complitech/spark-sprape.git'
 set :branch, 'main'
 set :rails_env, 'production'
