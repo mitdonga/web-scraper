@@ -1,0 +1,30 @@
+#!/bin/sh
+if [ "$1" = "" ]
+then
+  echo "Please provide deployment target, e.g. live, beta, demo - make sure that config/deploy-<<target>>.rb file exists."
+  exit 1
+else
+  if test -f "config/deploy.rb"; then
+    echo "Oops, config/deploy.rb exists. Please rename it to config/deploy-<<target>>.rb first."
+    exit 1
+  fi
+  if test -f "config/deploy-$1.rb"; then
+    cp -- "config/deploy-$1.rb" "config/deploy.rb"
+    if [ "$2" = "" ] || [ "$2" = "deploy" ]
+    then
+      echo "Deploying to $1"
+      mina deploy
+      mina restart
+      echo "Deployed to $1"
+    else
+      echo "$2 to $1"
+      mina $2
+    fi
+    echo "Cleaning up config/deploy.rb"
+    rm -- "config/deploy.rb"
+    exit 0
+  else
+    echo "Deployment script config/deploy-$1.rb not found."
+    exit 1
+  fi
+fi
