@@ -38,5 +38,9 @@ module Sprape
     config.api_only = true
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.action_cable.url = "ws://localhost:3003/cable"
+    config.action_cable.allowed_request_origins = [ 'http://localhost:3000', 'chrome-extension://cbcbkhdmedgianpaifchdaddpnmgnknn', 'chrome-extension://flnheeellpciglgpaodhkhmapeljopja' ]
+
   end
 end
