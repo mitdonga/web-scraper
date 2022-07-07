@@ -3,7 +3,7 @@ class SprapeSchema < GraphQL::Schema
   query(Types::QueryType)
 
   subscription(Types::SubscriptionType)
-  use GraphQL::Subscriptions::ActionCableSubscriptions
+  use GraphQL::Subscriptions::ActionCableSubscriptions, broadcast: true
 
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
