@@ -341,9 +341,11 @@ class Scraper::Apt < Kimurai::Base
     entry ? ScrapeEntry.find(entry[:entry_id]).inprogress! : nil
   end
 
-  def finish_entry(entry, property_hash)
+  def finish_entry(entry, property)
     se = ScrapeEntry.find(entry[:entry_id])
-    se ? se.update(status: "completed", raw_hash: property_hash) : nil
+    l = se.link
+    l ? l.update(name: property[:name], s_id: property[:id]) : nil
+    se ? se.update(status: "completed", raw_hash: property.to_json) : nil
   end
 
   def parse(response, url:, data: {})
@@ -426,7 +428,7 @@ class Scraper::Apt < Kimurai::Base
     # puts "HASH BEFORE: #{property}"
     send_item property
     # puts "HASH TO BE SAVED: #{property.to_json}"
-    finish_entry(entry, property.to_json)
+    finish_entry(entry, property)
   end
 
   def all_cities
