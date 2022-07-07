@@ -4,8 +4,11 @@ module Types
     include GraphQL::Types::Relay::HasNodeField
     include GraphQL::Types::Relay::HasNodesField
 
+    
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
+
+    field :summary, resolver: Queries::Summary::Summary, description: "Returns all summary numbers"
 
     field :algos, resolver: Queries::Algos::Algos, description: "Returns all algorithms"
 
