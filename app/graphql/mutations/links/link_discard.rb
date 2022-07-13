@@ -2,28 +2,17 @@ module Mutations::Links
    class LinkDiscard < Mutations::BaseMutation
 
       argument :id, Integer, required: true
-      # argument :city_id, Integer, required: true
-      # argument :algo_id, Integer, required: true
-
-      # field :links, [Types::LinkType], null: true
+ 
       field :message, String, null: true
       field :errors, [String], null: true
 
-      def resolve(id: )
-
-         if Link.find(id)
-            
+      def resolve(id: )            
             link = Link.find(id)
-            if link.discard
-               return { message: "link discarded successfully" }
+            if link && link.discard
+               return { message: "link #{id} discarded successfully" }
             else
-               return { message: "link is already discarded successfully" }
+               return { message: "Link not found or already discarded" }
             end
-
-         else 
-            {message: "Link not found"}
-         end
-
       rescue Exception => e
          puts e.message
          puts e.backtrace.join("\n")

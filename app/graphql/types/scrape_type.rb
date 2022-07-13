@@ -12,5 +12,24 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
     field :scrape_entries, [Types::ScrapeEntryType], null: false
+
+    field :scrape_entries_count, Integer
+    field :completed_scrape_entries_count, Integer
+    field :canceled_scrape_entries_count, Integer
+
+    def scrape_entries_count
+      object.scrape_entries.count
+    end
+
+    def completed_scrape_entries_count
+      object.scrape_entries.completed.count
+    end
+
+    def canceled_scrape_entries_count
+      object.scrape_entries.canceled.count
+
+    end
+   
   end
 end
+
