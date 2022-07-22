@@ -22,14 +22,6 @@ class Scraper::Runner
             ended_at: result[:stop_time], 
             retries: @scrape.retries.to_i + 1, 
             status: result[:status].to_s == "completed" ? "completed" : "terminated")
-
-    # puts "STATUS: #{result[:status]}"
-    # puts "error: #{result[:error]}"
-    # puts "start_time: #{result[:start_time]}"
-    # puts "stop_time: #{result[:stop_time]}"
-    # puts "running_time: #{result[:running_time]}"
-    # puts "items sent: #{result[:items][:sent]}"
-    # puts "items processed: #{result[:items][:processed]}"
   end
 
   def scrape
