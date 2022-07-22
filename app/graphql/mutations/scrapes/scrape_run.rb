@@ -11,33 +11,39 @@ module Mutations::Scrapes
 
          runningScrape = Scrape.find_by(status: "inprogress")
 
-         if running 
+         if runningScrape.blank?
 
-         if !Scrape.find_by(id: scrape_id).blank?
+            if !Scrape.find_by(id: scrape_id).blank?
 
-            Thread.new do
-               execution_context = Rails.application.executor.run!
+               Thread.new do
+                  execution_context = Rails.application.executor.run!
 
-               scraper = Scraper::Runner.new(scrape_id)
-               scraper.run
+                  scraper = Scraper::Runner.new(scrape_id)
+                  scraper.run
 
-             ensure
-               execution_context.complete! if execution_context
+               ensure
+                  execution_context.complete! if execution_context
 
-                  return {
-                     message: "Scrape: #{scrape_id} run successfully"
-                  }
+                     return {
+                        message: "Scrape: #{scrape_id} run successfully"
+                     }
+               end
+
+               return {
+                  message: "Scrape started successfully"
+               }
+               
+            else
+               return {
+                  message: "Scrape: #{scrape_id} not found"
+               }
+
             end
 
-            return {
-               message: "Scrape started successfully"
-            }
-            
          else
             return {
-               message: "Scrape: #{scrape_id} not found"
+               message: "Scrape: #{runningScrape.name} is already running"
             }
-
          end
 
       rescue Exception => e
