@@ -15,6 +15,8 @@ module Mutations::Scrapes
 
             if !Scrape.find_by(id: scrape_id).blank?
 
+               scrape = Scrape.find(scrape_id)
+
                Thread.new do
                   execution_context = Rails.application.executor.run!
 
@@ -25,12 +27,12 @@ module Mutations::Scrapes
                   execution_context.complete! if execution_context
 
                      return {
-                        message: "Scrape: #{scrape_id} run successfully"
+                        message: "Scrape: #{scrape.name} run successfully"
                      }
                end
 
                return {
-                  message: "Scrape started successfully"
+                  message: "Scrape #{scrape.name} started successfully"
                }
                
             else

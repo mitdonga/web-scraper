@@ -15,5 +15,7 @@ module Types
 
     field :scrape_run, mutation: Mutations::Scrapes::ScrapeRun, description: "Run scrape_entries from Scrape", null: false
 
+    field :scrape_cancel, mutation: Mutations::Scrapes::ScrapeCancel, description: "Cancel running scrape", null: false
+
   end
 end
