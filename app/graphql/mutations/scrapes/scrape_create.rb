@@ -13,7 +13,7 @@ module Mutations::Scrapes
       def resolve(name:, link_ids:, scheduled_at: Time.now)
 
          if Scrape.find_by(name: name).blank?
-            scrape = Scrape.new(name: name, scheduled_at: scheduled_at.to_datetime)
+            scrape = Scrape.new(name: name, scheduled_at: scheduled_at.to_datetime, status: "scheduled")
             if scrape.save
 
                link_ids.each do |link_id|
@@ -24,7 +24,7 @@ module Mutations::Scrapes
                end
 
                {scrape: scrape,
-                message: "New scrape created successfully"}
+                message: "New scrape #{scrape.name} created successfully"}
             else
                {message: "Error while creating scrape",
                   errors: scrape.errors.full_messages}
