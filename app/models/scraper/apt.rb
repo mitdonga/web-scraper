@@ -18,7 +18,7 @@ class Saver < Kimurai::Pipeline
       property[:id] = property_from_spark["id"].to_i
      
       # Reset existing property units' availability to unavailable
-      # reset_units_availability(property[:id])
+      reset_units_availability(property[:id])
 
       # find and/or create floor plans for the property
       new_floor_plans = []
