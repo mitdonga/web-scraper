@@ -4,16 +4,17 @@ module Mutations::Scrapes
 
       argument :name, String, required: true
       argument :link_ids, [Integer], required: true
+      argument :frequency, String, required: true
       argument :scheduled_at, String, required: false
 
       field :scrape, Types::ScrapeType, null: true
       field :message, String, null: true
       field :errors, [String], null: true
 
-      def resolve(name:, link_ids:, scheduled_at: Time.now)
+      def resolve(name:, link_ids:, frequency:, scheduled_at: Time.now)
 
          if Scrape.find_by(name: name).blank?
-            scrape = Scrape.new(name: name, scheduled_at: scheduled_at.to_datetime, status: "scheduled")
+            scrape = Scrape.new(name: name, scheduled_at: scheduled_at.to_datetime, status: "scheduled", frequency: frequency)
             if scrape.save
 
                link_ids.each do |link_id|
@@ -39,8 +40,6 @@ module Mutations::Scrapes
          puts e.backtrace.join("\n")
          return { message: "Oops, something went wrong!", errors: [e.message] }
       end
-
-
 
    end
 

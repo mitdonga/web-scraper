@@ -15,12 +15,12 @@ module Queries
       argument :include_discarded, Boolean, required: false
 
       type [Types::LinkType], null: false
-  
+        
       def resolve(city_id:nil, include_discarded:false)
         if include_discarded
-          city_id ? Link.where(city_id: city_id) : Link.all
+          city_id ? Link.where(city_id: city_id).includes(:city) : Link.all.includes(:city)
         else
-          city_id ? Link.kept.where(city_id: city_id) : Link.kept
+          city_id ? Link.kept.where(city_id: city_id).includes(:city) : Link.kept.includes(:city)
         end
       end
 
