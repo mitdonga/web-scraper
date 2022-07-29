@@ -13,8 +13,15 @@ class Scraper::Runner
   end
 
   def run
+    puts "Scheduling Next Scrape: #{@scrape.name}"
+    # Create and schedule next scrape
+    next_scrape =  @scrape.schedule_next
+    puts "Scheduled at #{next_scrape.scheduled_at}"
+   
     puts "Starting Scrape: #{@scrape.name}"
-    @scrape.inprogress!
+    @scrape.update(started_at: Time.now,
+      retries: @scrape.retries.to_i + 1, 
+      status: "inprogress")
 
     result = Scraper::Apt.crawl!
 

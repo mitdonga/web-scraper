@@ -22,13 +22,8 @@ module Mutations::Scrapes
 
                   scraper = Scraper::Runner.new(scrape_id)
                   scraper.run
-
                ensure
                   execution_context.complete! if execution_context
-
-                     return {
-                        message: "Scrape: #{scrape.name} run successfully"
-                     }
                end
 
                return {
