@@ -3,11 +3,12 @@ module Mutations::Scrapes
    class ScrapeRun < Mutations::BaseMutation
 
       argument :scrape_id, Integer, required: true
+      argument :run_mode, String, required: false
 
       field :message, String, null: true
       field :errors, [String], null: true
 
-      def resolve(scrape_id: )
+      def resolve(scrape_id:, run_mode:"run")
 
          runningScrape = Scrape.find_by(status: "inprogress")
 
@@ -20,7 +21,8 @@ module Mutations::Scrapes
                Thread.new do
                   execution_context = Rails.application.executor.run!
 
-                  scraper = Scraper::Runner.new(scrape_id)
+                  run_mode == 'resume' ? scraper = Scraper::Runner.new(scrape_id) : scraper = Scraper::Runner.new(scrape_id, 'resume') 
+                  
                   scraper.run
                ensure
                   execution_context.complete! if execution_context

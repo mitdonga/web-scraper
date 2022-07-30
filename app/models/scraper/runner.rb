@@ -1,9 +1,9 @@
 class Scraper::Runner
-  def initialize(scrape_id)
+  def initialize(scrape_id, run_mode='run')
     return unless scrape_id
 
     if @scrape = get_scrape_info(scrape_id)
-      populate_entries
+      run_mode == 'run' ? populate_entries : populate_entries(false)
       Scraper::Apt.start_urls = self.urls
       Scraper::Apt.url_hash = @urls
       Scraper::Apt.runner = self
@@ -55,11 +55,11 @@ class Scraper::Runner
     Scrape.includes(scrape_entries: [link: :city]).references(:scrape_entries).find_by(id:scrape_id)
   end
 
-  def populate_entries
+  def populate_entries(include_completed = true)
     @entries = []
     @urls = []
     @scrape.scrape_entries.each do |entry|
-      if entry.link.kept?
+      if entry.link.kept? and entry.status != 'completed' and entry.status != 'canceled'
         @entries << entry
         @urls << {entry_id: entry.id, url: entry.link.url}
       end
