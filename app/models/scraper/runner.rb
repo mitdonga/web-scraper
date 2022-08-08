@@ -59,7 +59,8 @@ class Scraper::Runner
     @entries = []
     @urls = []
     @scrape.scrape_entries.each do |entry|
-      if entry.link.kept? and entry.status != 'completed' and entry.status != 'canceled'
+      # TODO: Temporarily commenting this to run daily scrapes. Uncomment this condition for actual behavior
+      if entry.link.kept? #and entry.status != 'completed' and entry.status != 'canceled'
         @entries << entry
         @urls << {entry_id: entry.id, url: entry.link.url}
       end
