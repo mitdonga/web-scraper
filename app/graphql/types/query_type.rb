@@ -21,6 +21,7 @@ module Types
 
     field :scrapes, Types::ScrapeType.connection_type, connection: true, resolver: Queries::Scrapes::Scrapes, description: "Returns all scrapes with given status(es)."
     field :scrape, resolver: Queries::Scrapes::Find, description: "Returns scrapes searched by search text"
+    field :allScrape, resolver: Queries::Scrapes::AllScrapes, description: "Returns all scrapes"
 
   end
 end

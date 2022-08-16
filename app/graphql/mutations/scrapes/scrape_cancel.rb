@@ -13,11 +13,11 @@ module Mutations::Scrapes
 
          unless scrape.blank?
             
-            if scrape.inprogress?
+            if scrape.inprogress? || scrape.scheduled?
 
                scrape.cancel
 
-               return {message: "Scrape #{scrape.name} cancelled successfully"}
+               return {message: "Scrape #{scrape.id}: #{scrape.name} cancelled successfully"}
             else
                return {message: "Scrape #{scrape.name} is not running right now"}
             end

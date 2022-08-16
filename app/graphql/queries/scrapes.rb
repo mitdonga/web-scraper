@@ -1,5 +1,15 @@
 module Queries
   module Scrapes
+    class AllScrapes < Queries::BaseQuery
+      # argument :status, [Types::StatusType], required: false
+
+      type [Types::ScrapeType], null: false
+  
+      def resolve()
+        Scrape.where(status: "scheduled").order(:name)
+      end
+    end
+
     class Scrapes < Queries::BaseQuery
       argument :status, [Types::StatusType], required: false
 

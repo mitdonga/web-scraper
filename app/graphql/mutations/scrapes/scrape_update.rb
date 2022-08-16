@@ -5,6 +5,7 @@ module Mutations::Scrapes
       argument :scrape_id, ID, required: true
       argument :name, String, required: false
       argument :status, Integer, required: false
+      argument :frequency, String, required: false
       argument :scheduled_at, String, required: false
       argument :add_link_ids, [Integer], required: false
       argument :remove_scrape_entry_ids, [Integer], required: false
@@ -21,6 +22,7 @@ module Mutations::Scrapes
          scrape.name = args[:name] if args[:name]
          scrape.status = args[:status] if args[:status]
          scrape.scheduled_at = args[:scheduled_at].to_datetime if args[:scheduled_at]  && args[:scheduled_at].to_datetime
+         scrape.frequency = args[:frequency] if args[:frequency]
          if scrape.save
             if args[:add_link_ids].size > 0
                scrape_entries_created = 0
@@ -45,7 +47,7 @@ module Mutations::Scrapes
             end
 
             {scrape: scrape,
-               message: "Scrape updated successfully",
+               message: "Scrape updated successfully, #{scrape_entries_created} scrape entries created, #{scrape_entries_deleted} scrape entries deleted",
                scrape_entries_created: scrape_entries_created,
                scrape_entries_deleted: scrape_entries_deleted}
          else
