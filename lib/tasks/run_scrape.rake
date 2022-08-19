@@ -23,4 +23,9 @@ namespace :scrape do
     s.run
   end
 
+  desc "Run San Antonio scrape"
+  task run_san_antonio: :environment do
+    s = Scraper::Runner.new(160)
+    s.run
+  end
 end
