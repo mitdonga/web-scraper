@@ -388,7 +388,7 @@ class Scraper::Ppm < Kimurai::Base
     
     request_to :parse_floor_plans, url: floor_plans_url, data: property
 
-    debugger
+    # debugger
 
   end
 
