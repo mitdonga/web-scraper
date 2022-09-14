@@ -15,11 +15,12 @@ module Mutations::Links
 
             links_created = []
 
-            urls.each do |url|
-
-               if Link.find_by(url: url).blank?
-                  links_created << Link.create(url: url, city_id: city_id, algo_id: algo_id)
-               end
+            urls.each do |u|
+							url = URI.extract(u, /http(s)?/)[-1]
+							url = url[-1] == "/" ? url.chop : url
+							if Link.where("url LIKE ?", "%#{url}%").blank?
+								links_created << Link.create(url: url, city_id: city_id, algo_id: algo_id)
+							end
             end
 
             return { links: links_created, message: "#{links_created.size} links created successfully" }
