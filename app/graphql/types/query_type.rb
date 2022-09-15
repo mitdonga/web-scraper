@@ -23,5 +23,7 @@ module Types
     field :scrape, resolver: Queries::Scrapes::Find, description: "Returns scrapes searched by search text"
     field :allScrape, resolver: Queries::Scrapes::AllScrapes, description: "Returns all scrapes"
 
+    field :scrapeEntries, resolver: Queries::ScrapeEntries::Find, description: "Returns scrape_entries from on scrape_id"
+
   end
 end
