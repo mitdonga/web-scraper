@@ -6,7 +6,7 @@ module Queries
 			type [Types::ScrapeEntryType], null: false
 
 			def resolve(scrape_id:)
-				ScrapeEntry.where(scrape_id: scrape_id).order(:status)
+				ScrapeEntry.includes(:link).where(scrape_id: scrape_id).order(:status)
 			end
 		end	
 	end
