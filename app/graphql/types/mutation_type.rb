@@ -6,6 +6,8 @@ module Types
     field :links_create, mutation: Mutations::Links::LinksCreate, description: "Add links to city", null: false
 
     field :link_discard, mutation: Mutations::Links::LinkDiscard, description: "Discard link", null: false
+    
+		field :update_fpimg_fetching, mutation: Mutations::Links::UpdateFpimgFetching, description: "Update Floor Plan Fetching", null: false
 
     field :link_undiscard, mutation: Mutations::Links::LinkUndiscard, description: "Undiscard link", null: false
 

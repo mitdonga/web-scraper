@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_29_071050) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_22_100350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -36,6 +36,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_29_071050) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
+    t.boolean "fetch_floorplan_images", default: true
     t.index ["algo_id"], name: "index_links_on_algo_id"
     t.index ["city_id"], name: "index_links_on_city_id"
     t.index ["discarded_at"], name: "index_links_on_discarded_at"

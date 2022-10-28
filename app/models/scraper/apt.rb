@@ -286,8 +286,8 @@ class Scraper::Apt < Kimurai::Base
   include Scraper::Utils
 
   @name = "Apt"
-  @engine = :mechanize
-  # @engine = :selenium_chrome
+  # @engine = :mechanize
+  @engine = :selenium_chrome
 
   @runner = nil
 
@@ -296,7 +296,8 @@ class Scraper::Apt < Kimurai::Base
   @config = {
     user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
     before_request: { delay: 3..6 },
-    skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }]
+    skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
+		retry_request_errors: [Net::ReadTimeout]
   }
   
   # @cities = []
@@ -306,7 +307,7 @@ class Scraper::Apt < Kimurai::Base
   @start_urls = []
   # @start_urls = [
   #               "https://www.apartments.com/the-clark-chicago-il/1vftkw4/",
-  #               "https://www.apartments.com/cascade-chicago-il/hc2k503/",
+  #               # "https://www.apartments.com/cascade-chicago-il/hc2k503/",
   #               # "https://www.apartments.com/3eleven-chicago-il/66x7f8r/",
   #    ]
 
@@ -353,6 +354,7 @@ class Scraper::Apt < Kimurai::Base
     entry = Scraper::Apt.url_hash.find {|u| u[:url] == url}
     start_entry(entry)
     property = {}
+		fp_error = false
 
     # Property Name
     property[:name] = response.css("h1","propertyName").text.strip
@@ -378,8 +380,19 @@ class Scraper::Apt < Kimurai::Base
     # zip code
     property[:zip] = response.xpath("//div[@class='propertyAddressContainer']/h2/span[3]/span[2]").text.strip
 
+		# debugger
+
+		unavailable_fp_btn = response.xpath("//div[@data-tab-content-id='all']//div[@class='unAvailableFloorPlanBtnSection mortar-wrapper']//button[@class='js-showUnavailableFloorPlansButton']")
+
+		if unavailable_fp_btn.any?
+			browser.find(:xpath, "//div[@data-tab-content-id='all']//div[@class='unAvailableFloorPlanBtnSection mortar-wrapper']//button[@class='js-showUnavailableFloorPlansButton']").click
+			sleep 5
+		end
+
     # Parse floor_plans from response
-    response.xpath("//div[@data-tab-content-id='all']//div[@class='priceGridModelWrapper js-unitContainer mortar-wrapper']").each do |fp|
+    # response.xpath("//div[@data-tab-content-id='all']//div[@class='priceGridModelWrapper js-unitContainer mortar-wrapper']").each do |fp|
+
+		browser.current_response.xpath("//div[@data-tab-content-id='all']//div[@class='priceGridModelWrapper js-unitContainer mortar-wrapper']").each do |fp|
 
       floor_plan = {}
       # Floor Plan Name
@@ -399,10 +412,30 @@ class Scraper::Apt < Kimurai::Base
       floor_plan[:sqftMax] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span[3]").text)
       # Floor Plan Deposit Amount
       floor_plan[:deposit] = parse_amount(fp.xpath(".//span[@class='detailsTextWrapper leaseDepositLabel']/span[2]").text)
+			floor_plan[:plan2dLink] = nil
       # Floor Plan Availability
       # t.xpath(".//span[@class='detailsTextWrapper leaseDepositLabel']/span[3]").text  
       # Floor Plan Image
       # t.xpath(".//div[@class='floorPlanButtonImage']").to_s
+			if entry[:fetch_floorplan_images]
+				begin
+					var = fp.xpath(".//div[@class='actionLinksContainer']//button[@class='actionLinks js-priceGridModelfloorPlanButtons']").to_a[0]&.attributes["data-modelname"]&.value
+					var2 = fp.xpath(".//div[@class='actionLinksContainer']//button[@class='actionLinks js-priceGridModelfloorPlanButtons']").to_a[0]&.attributes["data-rentalkey"]&.value
+
+					browser.find(:xpath, "//div[@data-tab-content-id='all']//button[@data-modelname='#{var}'][@data-rentalkey='#{var2}'][@class='actionLinks js-priceGridModelfloorPlanButtons']").click
+		
+					sleep 5
+		
+					fp_img_url = browser.current_response.xpath("//ul[@id='photoList']//li[1]//div[@class='backgroundImageWrapper imgReady']").to_a[0]&.attributes["data-img-src"]&.value
+					
+					floor_plan[:plan2dLink] = fp_img_url
+					browser.find(:xpath, "//div[@id='profileMediaViewer']//button[@class='close'][@aria-label='close']").click
+					sleep 3
+				rescue => e
+					fp_error = var.nil? ? false : true
+					puts e
+				end
+			end
 
       if floor_plan[:bed]
         floor_plan[:units] = []
@@ -424,12 +457,17 @@ class Scraper::Apt < Kimurai::Base
         end
         property[:floorPlans] << floor_plan
       end
+
+			puts floor_plan
     end
+		Link.find_by(url: entry[:url]).update(fetch_floorplan_images: false) unless fp_error	
+		puts property
 
     # puts "HASH BEFORE: #{property}"
     send_item property
     # puts "HASH TO BE SAVED: #{property.to_json}"
     finish_entry(entry, property)
+
   end
 
   def all_cities
