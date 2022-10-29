@@ -3,13 +3,13 @@ require "graphql/client/http"
 
 module Scraper::Spark
   # Configure GraphQL endpoint using the basic HTTP network adapter.
-  HTTP = GraphQL::Client::HTTP.new("https://sparkgql.compli.tech") do
-  # HTTP = GraphQL::Client::HTTP.new("https://api.sparkapt.com") do
+  # HTTP = GraphQL::Client::HTTP.new("https://sparkgql.compli.tech") do
+  HTTP = GraphQL::Client::HTTP.new("https://api.sparkapt.com") do
     def headers(context)
       # Optionally set any HTTP headers
       {
         "User-Agent": "Spark Scraper",
-        "Authorization": "Bearer voLe2rV8QGvBP5Ud+hYy+VMSHKg=--lnVSDr30DDwc3yxD--WZ5zcLQABUTb7yyKNLKwcw=="
+        "Authorization": "Bearer uKlZL56BlpSFfDcBt8Qx0rj1qtA=--dvCdpMBynTRdSy9w--z8sg1hGRO18Q8T5X/60cDw=="
         # "Authorization": "Bearer lXohS2op8KEhcW7RSvICwTCAeeQ=--wFzME/wPVPgK5W5a--yn8FsFAR67MbNkxoR+FzKA=="
         # "Authorization": "Bearer ruq6bdyoBcCLEfNNY+3VK0S/7ks=--wUMtL4DE5npnFeoI--uAB5s6RxJc59gZgSZxLoaQ=="
       }
