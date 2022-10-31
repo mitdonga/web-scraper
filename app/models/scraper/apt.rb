@@ -306,7 +306,7 @@ class Scraper::Apt < Kimurai::Base
     user_agent: -> { USER_AGENTS.sample },
     before_request: { delay: 3..6 },
     skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
-		retry_request_errors: [Net::ReadTimeout]
+		retry_request_errors: [Net::ReadTimeout],
     session: {
       before_request: {
         change_user_agent: true,
