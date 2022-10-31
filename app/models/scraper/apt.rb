@@ -285,6 +285,14 @@ end
 class Scraper::Apt < Kimurai::Base
   include Scraper::Utils
 
+  USER_AGENTS = [
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 7.1.1; Google Pixel Build/NMF26F; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/54.0.2840.85 Mobile Safari/537.36",
+    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"
+  ]
+
   @name = "Apt"
   # @engine = :mechanize
   @engine = :selenium_chrome
@@ -294,10 +302,23 @@ class Scraper::Apt < Kimurai::Base
   @pipelines = [:saver]
 
   @config = {
-    user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
+    # user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
+    user_agent: -> { USER_AGENTS.sample },
     before_request: { delay: 3..6 },
     skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
 		retry_request_errors: [Net::ReadTimeout]
+    session: {
+      before_request: {
+        change_user_agent: true,
+    
+        # Clear all cookies before each request, works for all drivers
+        clear_cookies: true,
+
+        # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
+        # use this option instead (works for all drivers)
+        clear_and_set_cookies: true,
+      }
+    }
   }
   
   # @cities = []
