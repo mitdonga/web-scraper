@@ -1,6 +1,38 @@
 require 'kimurai'
 require "graphql/client"
 require "graphql/client/http"
+require 'selenium-webdriver'
+
+# options = Selenium::WebDriver::Chrome::Options.new
+# options.add_argument('--proxy-server=socks5://localhost:8888', '--headless')
+# options.add_option(:detach, true)
+# driver = Selenium::WebDriver.for(:chrome, capabilities: options)
+# # driver.get('/usr/local/bin/chromedriver')
+
+# def selenium_options
+#   options = Selenium::WebDriver::Chrome::Options.new
+#   options.add_argument('--proxy-server=socks5://localhost:8888')
+# 	# ssh -D 8888 -N -f -q 92.222.237.105
+#   options.add_argument('--headless')
+#   options
+# end
+
+# # optional
+# def selenium_capabilities_chrome
+#   Selenium::WebDriver::Remote::Capabilities.chrome
+# end
+
+# def driver_init
+#   caps = [
+#     selenium_options,
+#     selenium_capabilities_chrome,
+#   ]
+
+#   Selenium::WebDriver.for(:chrome, capabilities: caps)
+# end
+
+# driver = driver_init
+# driver.get "https://chromedriver.storage.googleapis.com/"
 
 class Saver < Kimurai::Pipeline
   def process_item(property, options: {})
@@ -300,12 +332,15 @@ class Scraper::Apt < Kimurai::Base
   @runner = nil
 
   @pipelines = [:saver]
+	
+	# PROXIES = ["socks5:192.252.216.81:4145", "socks5:184.178.172.17:4145", "socks5:72.210.221.197:4145"]
 
   @config = {
     # user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
     user_agent: -> { USER_AGENTS.sample },
     before_request: { delay: 3..6 },
     skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
+		# proxy: "250.165.246.106:8085:socks5",
 		retry_request_errors: [Net::ReadTimeout],
     session: {
       before_request: {
@@ -318,7 +353,8 @@ class Scraper::Apt < Kimurai::Base
         # use this option instead (works for all drivers)
         clear_and_set_cookies: true,
       }
-    }
+    },
+		# proxy: -> { PROXIES.sample }
   }
   
   # @cities = []

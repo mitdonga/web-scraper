@@ -324,6 +324,7 @@ DEPENDENCIES
   rbcat!
   rufus-scheduler
   seed_dump
+  selenium-webdriver
   sidekiq (~> 6.5)
   tzinfo-data
   unicorn
