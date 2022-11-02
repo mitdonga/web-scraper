@@ -340,7 +340,7 @@ class Scraper::Apt < Kimurai::Base
     user_agent: -> { USER_AGENTS.sample },
     before_request: { delay: 3..6 },
     skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
-		# proxy: "144.168.217.88:8780:socks5",
+		proxy: "149.6.162.2:9999:socks5",
 		retry_request_errors: [Net::ReadTimeout],
     session: {
       before_request: {
