@@ -4,7 +4,7 @@ require "graphql/client/http"
 require 'selenium-webdriver'
 
 # options = Selenium::WebDriver::Chrome::Options.new
-# options.add_argument('--proxy-server=socks5://localhost:8888', '--headless')
+# options.add_argument('--proxy-server=socks5://localhost:8888')
 # options.add_option(:detach, true)
 # driver = Selenium::WebDriver.for(:chrome, capabilities: options)
 # # driver.get('/usr/local/bin/chromedriver')
@@ -321,8 +321,8 @@ class Scraper::Apt < Kimurai::Base
     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1",
     "Mozilla/5.0 (Linux; Android 7.1.1; Google Pixel Build/NMF26F; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/54.0.2840.85 Mobile Safari/537.36",
-    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-    "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"
+    # "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    # "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"
   ]
 
   @name = "Apt"
@@ -340,7 +340,7 @@ class Scraper::Apt < Kimurai::Base
     user_agent: -> { USER_AGENTS.sample },
     before_request: { delay: 3..6 },
     skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
-		# proxy: "250.165.246.106:8085:socks5",
+		# proxy: "144.168.217.88:8780:socks5",
 		retry_request_errors: [Net::ReadTimeout],
     session: {
       before_request: {
@@ -460,11 +460,11 @@ class Scraper::Apt < Kimurai::Base
       # Floor Plan Max Rent
       floor_plan[:rentMax] = fp.css(".rentLabel").text.strip.split(" – ")[1].to_s.gsub("$","").gsub(",","").to_i
       # Floor Plan Type / Bed
-      floor_plan[:bed] = parse_bed(fp.xpath(".//span[@class='detailsTextWrapper']/span[1]").text)
+      floor_plan[:bed] = parse_bed(fp.xpath(".//span[@class='detailsTextWrapper']/span").to_a[0].text)
       # Floor Plan Baths
-      floor_plan[:bath] = parse_bath(fp.xpath(".//span[@class='detailsTextWrapper']/span[2]").text)
+      floor_plan[:bath] = parse_bath(fp.xpath(".//span[@class='detailsTextWrapper']/span").to_a[1].text)
       # Floor Plan Size / Sq Feet
-      floor_plan[:sqft] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span[3]").text).to_s
+      floor_plan[:sqft] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span").to_a[2].text).to_s
       floor_plan[:sqftMin] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span[3]").text)
       floor_plan[:sqftMax] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span[3]").text)
       # Floor Plan Deposit Amount
