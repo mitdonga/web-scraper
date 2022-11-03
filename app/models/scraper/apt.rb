@@ -476,20 +476,23 @@ class Scraper::Apt < Kimurai::Base
       # t.xpath(".//div[@class='floorPlanButtonImage']").to_s
 			if entry[:fetch_floorplan_images]
 				begin
-					var = fp.xpath(".//div[@class='actionLinksContainer']//button[@class='actionLinks js-priceGridModelfloorPlanButtons']").to_a[0]&.attributes["data-modelname"]&.value
-					var2 = fp.xpath(".//div[@class='actionLinksContainer']//button[@class='actionLinks js-priceGridModelfloorPlanButtons']").to_a[0]&.attributes["data-rentalkey"]&.value
-
+					var = fp.xpath(".//div[@class='column2']//div").to_a[0]["data-modelname"]
+					var2 = fp.xpath(".//div[@class='column2']//div").to_a[0]["data-rentalkey"]
 					browser.find(:xpath, "//div[@data-tab-content-id='all']//button[@data-modelname='#{var}'][@data-rentalkey='#{var2}'][@class='actionLinks js-priceGridModelfloorPlanButtons']").click
-		
 					sleep 5
-		
 					fp_img_url = browser.current_response.xpath("//ul[@id='photoList']//li[1]//div[@class='backgroundImageWrapper imgReady']").to_a[0]&.attributes["data-img-src"]&.value
-					
 					floor_plan[:plan2dLink] = fp_img_url
-					browser.find(:xpath, "//div[@id='profileMediaViewer']//button[@class='close'][@aria-label='close']").click
+					browser.find(:xpath, "//div[@id='js-headerUtilities'][@class='headerUtilities']//button[@class='close'][@aria-label='close']").click
 					sleep 3
 				rescue => e
 					fp_error = var.nil? ? false : true
+					begin 
+						if browser.xpath("//div[@id='js-headerUtilities'][@class='headerUtilities']//button[@class='close'][@aria-label='close']")
+							browser.find(:xpath, "//div[@id='js-headerUtilities'][@class='headerUtilities']//button[@class='close'][@aria-label='close']").click
+						end
+						rescue => error
+							puts error
+						end
 					puts e
 				end
 			end
