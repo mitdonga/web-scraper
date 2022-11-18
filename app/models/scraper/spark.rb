@@ -127,7 +127,7 @@ module Scraper::Spark
 
   propertiesWithoutJoinData = <<-'GRAPHQL'
     query ($cityId: Int, $search: String) {
-      propertiesWithoutJoinData(cityId:$cityId, search:$search, orderBy: [{id:"id"}], onlyAvailable:false) {
+      propertiesWithoutJoinData(cityId:$cityId, search:$search, orderBy: [{id:"id"}], onlyAvailable:false, exactMatch: true) {
         totalCount
         edges {
           node {
