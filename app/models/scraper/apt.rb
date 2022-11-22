@@ -3,37 +3,6 @@ require "graphql/client"
 require "graphql/client/http"
 require 'selenium-webdriver'
 
-# options = Selenium::WebDriver::Chrome::Options.new
-# options.add_argument('--proxy-server=socks5://localhost:8888')
-# options.add_option(:detach, true)
-# driver = Selenium::WebDriver.for(:chrome, capabilities: options)
-# # driver.get('/usr/local/bin/chromedriver')
-
-# def selenium_options
-#   options = Selenium::WebDriver::Chrome::Options.new
-#   options.add_argument('--proxy-server=socks5://localhost:8888')
-# 	# ssh -D 8888 -N -f -q 92.222.237.105
-#   options.add_argument('--headless')
-#   options
-# end
-
-# # optional
-# def selenium_capabilities_chrome
-#   Selenium::WebDriver::Remote::Capabilities.chrome
-# end
-
-# def driver_init
-#   caps = [
-#     selenium_options,
-#     selenium_capabilities_chrome,
-#   ]
-
-#   Selenium::WebDriver.for(:chrome, capabilities: caps)
-# end
-
-# driver = driver_init
-# driver.get "https://chromedriver.storage.googleapis.com/"
-
 class Saver < Kimurai::Pipeline
   def process_item(property, options: {})
     # Here you can save item to the database, send it to a remote API or
@@ -64,7 +33,7 @@ class Saver < Kimurai::Pipeline
         floor_plan_from_spark = find_floor_plan(fp, property_from_spark["floorPlans"])
 
         if floor_plan_from_spark
-          fp[:id] = floor_plan_from_spark["id"].to_i 
+          fp[:id] = floor_plan_from_spark["id"].to_i
 
           # find or create units for this floor plan
           fp[:units].each do |u|
@@ -155,7 +124,7 @@ class Saver < Kimurai::Pipeline
     # find floor_plan from the spark property
     if floor_plans
       floor_plans.each do |fp|
-        if fp["name"].downcase == floor_plan[:name].downcase
+        if fp["name"].downcase == floor_plan[:name].downcase && fp["sqft"] == floor_plan[:sqft]
           return fp
         end
       end
@@ -331,6 +300,8 @@ class Scraper::Apt < Kimurai::Base
 
   @runner = nil
 
+	@scrape_property = false
+
   @pipelines = [:saver]
 	
 	PROXIES = [
@@ -426,6 +397,18 @@ class Scraper::Apt < Kimurai::Base
     @runner = runner
   end
 
+	def self.scrape_property                                     #For Single Property Scrape
+		@scrape_property
+	end
+
+	def self.scraper_name=(name = "Apt")                  
+		@name = name
+	end
+
+	def self.scrape_property=(scrape_property = false)           #For Single Property Scrape
+		@scrape_property = scrape_property
+	end
+
   def self.url_hash
     @url_hash
   end
@@ -442,8 +425,16 @@ class Scraper::Apt < Kimurai::Base
     entry ? Scraper::Apt.runner.entry(entry[:entry_id]).link.city.name : nil
   end
 
-  def city_id(entry)
+	def city_id(entry)
     entry ? Scraper::Apt.runner.entry(entry[:entry_id]).link.city.s_id : nil
+	end
+
+  def scrape_property_city_name                 #For Single Property Scrape
+    Scraper::Apt.runner.link.city.name
+  end
+
+  def scrape_property_city_id                   #For Single Property Scrape
+    Scraper::Apt.runner.link.city.s_id
   end
 
   def start_entry(entry)
@@ -457,9 +448,24 @@ class Scraper::Apt < Kimurai::Base
     se ? se.update(status: "completed", raw_hash: property.to_json) : nil
   end
 
+	def is_fetch_floorplan_images(entry)           #For Single Property Scrape                                                    
+		unless entry
+			Scraper::Apt.scrape_property &&  Scraper::Apt.runner.link.fetch_floorplan_images ? true : false
+		else 
+			entry[:fetch_floorplan_images]
+		end
+	end
+
   def parse(response, url:, data: {})
-    entry = Scraper::Apt.url_hash.find {|u| u[:url] == url}
-    start_entry(entry)
+
+		scrape_property = Scraper::Apt.scrape_property       #For Single Property Scrape
+		entry = nil
+
+		unless scrape_property
+			entry = Scraper::Apt.url_hash.find {|u| u[:url] == url}
+			start_entry(entry)
+		end
+
     property = {}
 		fp_error = false
 
@@ -477,9 +483,13 @@ class Scraper::Apt < Kimurai::Base
           response.xpath("//div[@class='propertyAddressContainer']/h2/span[3]/span[2]").text.strip
 
     # City name
-    property[:city] = city_name(entry) # response.xpath("//div[@class='propertyAddressContainer']/h2/span[2]").text.strip
-    # property[:cityId] = city_id(property[:city], property[:state])
-    property[:cityId] = city_id(entry)
+		unless scrape_property
+			property[:city] = city_name(entry) 
+			property[:cityId] = city_id(entry)
+		else 
+			property[:city] = scrape_property_city_name         #For Single Property Scrape
+			property[:cityId] = scrape_property_city_id
+		end
 
     # State name
     property[:state] = response.xpath("//div[@class='propertyAddressContainer']/h2/span[3]/span[1]").text.strip
@@ -525,7 +535,7 @@ class Scraper::Apt < Kimurai::Base
       # t.xpath(".//span[@class='detailsTextWrapper leaseDepositLabel']/span[3]").text  
       # Floor Plan Image
       # t.xpath(".//div[@class='floorPlanButtonImage']").to_s
-			if entry[:fetch_floorplan_images]
+			if is_fetch_floorplan_images(entry)
 				begin
 					var = fp.xpath(".//div[@class='column2']//div").to_a[0]["data-modelname"]
 					var2 = fp.xpath(".//div[@class='column2']//div").to_a[0]["data-rentalkey"]
@@ -571,13 +581,13 @@ class Scraper::Apt < Kimurai::Base
 
 			puts floor_plan
     end
-		Link.find_by(url: entry[:url]).update(fetch_floorplan_images: false) unless fp_error	
+		Link.find_by(url: scrape_property ? url : entry[:url]).update(fetch_floorplan_images: false) unless fp_error	
 		puts property
 
     # puts "HASH BEFORE: #{property}"
     send_item property
     # puts "HASH TO BE SAVED: #{property.to_json}"
-    finish_entry(entry, property)
+    finish_entry(entry, property) unless scrape_property
 
   end
 
