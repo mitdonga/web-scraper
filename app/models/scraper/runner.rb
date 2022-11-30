@@ -4,7 +4,7 @@ class Scraper::Runner
 
     if @scrape = get_scrape_info(scrape_id)
       run_mode == 'run' ? populate_entries : populate_entries(false)
-      Scraper::Apt.start_urls = self.urls
+      Scraper::Apt.start_urls = [self.urls.first]
       Scraper::Apt.url_hash = @urls
       Scraper::Apt.runner = self
     else
@@ -38,6 +38,7 @@ class Scraper::Runner
   # def entry(url)
   #   @entries.find_all {|e| e.link.url == url}
   # end
+	
   def entry(entry_id)
     @entries.find {|e| e.id == entry_id}
   end

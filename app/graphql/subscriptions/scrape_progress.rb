@@ -1,11 +1,7 @@
 module Subscriptions
-  class ScrapeProgress < GraphQL::Schema::Subscription
-    argument :scrape_id, ID, required: true
+	class ScrapeProgress < GraphQL::Schema::Subscription
 
-    field :progress, Integer, null: false
+		field :scrape, Types::ScrapeType, null: true
 
-    def resolve(scrape_id:)
-      {data: {progress: rand(1..100)}}
-    end
-  end
+	end
 end

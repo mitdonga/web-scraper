@@ -17,9 +17,11 @@ module Mutations::Links
 
             urls.each do |u|
 							url = URI.extract(u, /http(s)?/)[-1]
-							url = url[-1] == "/" ? url.chop : url
-							if Link.where("url LIKE ?", "%#{url}%").blank?
-								links_created << Link.create(url: url, city_id: city_id, algo_id: algo_id)
+							if url
+								url = url[-1] == "/" ? url : url.insert(-1, "/")
+								if Link.where("url LIKE ?", "%#{url}%").blank?
+									links_created << Link.create(url: url, city_id: city_id, algo_id: algo_id)
+								end
 							end
             end
 

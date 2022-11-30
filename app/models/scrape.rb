@@ -1,4 +1,6 @@
 class Scrape < ApplicationRecord
+	after_update :trigger_scrape_progress
+
   has_many :scrape_entries, dependent: :destroy
 
   enum :status, { scheduled: 0, inprogress: 1, completed: 2, canceled: 3, terminated: 4 }, scopes: true
@@ -24,6 +26,10 @@ class Scrape < ApplicationRecord
   def next_run_timestamp(from_now=false)
     (from_now ? Time.now : self.scheduled_at) + hours_for(self.frequency).hours
   end
+
+	def trigger_scrape_progress
+		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape: self})
+	end
 
   private
 

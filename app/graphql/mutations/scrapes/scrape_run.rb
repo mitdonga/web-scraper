@@ -6,6 +6,7 @@ module Mutations::Scrapes
       argument :run_mode, String, required: false
 
       field :message, String, null: true
+      field :scrape, Types::ScrapeType, null: true
       field :errors, [String], null: true
 
       def resolve(scrape_id:, run_mode:"run")
@@ -29,19 +30,23 @@ module Mutations::Scrapes
                end
 
                return {
-                  message: "Scrape #{scrape.name} started successfully"
+                  message: "Scrape #{scrape.name} started successfully",
+									scrape: scrape,
+									errors: []
                }
                
             else
                return {
-                  message: "Scrape: #{scrape_id} not found"
+                  message: "Scrape: #{scrape_id} not found",
+									errors: ["Scrape: #{scrape_id} not found"]
                }
 
             end
 
          else
             return {
-               message: "Scrape: #{runningScrape.name} is already running"
+               message: "Scrape: #{runningScrape.name} is already running",
+							 errors: ["Scrape: #{runningScrape.name} is already running"]
             }
          end
 

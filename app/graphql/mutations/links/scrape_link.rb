@@ -8,6 +8,10 @@ module Mutations::Links
 
 		 def resolve(id: )            
 				link = Link.find(id)
+				
+				is_scraping_property = Scraper::Crawler.is_scraping_property
+				puts " ============================ #{is_scraping_property} =========================="
+
 				if link
 					Thread.new do
 						execution_context = Rails.application.executor.run!
@@ -17,12 +21,12 @@ module Mutations::Links
 							execution_context.complete! if execution_context
 					end
 
-					runningScrape = Scrape.find_by(status: "inprogress")
 
-					if runningScrape.nil?
+
+					unless is_scraping_property
 						return { message: "Scraping Started For #{link.name}", errors: [] }
 					else
-						return { message: "Scraping is already running", errors: ["Scrape #{runningScrape.name} is already running, try again later"] }
+						return { message: "Scraping is already running", errors: ["Scraper is already running, try again later"] }
 					end
 				else
 					return { message: "Link not found", errors: ["Link Not found"] }

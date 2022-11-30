@@ -6,11 +6,13 @@ class Scraper::PropertyRunner
     if get_link_info(link_id)
 			@link = get_link_info(link_id)
       populate_entries
-      Scraper::Apt.start_urls = self.url
-      Scraper::Apt.url_hash = @url
-      Scraper::Apt.runner = self
-      Scraper::Apt.scraper_name = "Scraper #{link_id}"
-      Scraper::Apt.scrape_property = true
+      Scraper::Crawler.start_urls = self.url
+      Scraper::Crawler.url_hash = [@url]
+      Scraper::Crawler.runner = self
+      Scraper::Crawler.is_scraping_property = true
+
+      # Scraper::Apt.scraper_name = "Scraper #{link_id}"
+      # Scraper::Apt.scrape_property = true
     else
       raise "Link not found..."
     end
@@ -27,7 +29,7 @@ class Scraper::PropertyRunner
     #   retries: @scrape.retries.to_i + 1, 
     #   status: "inprogress")
 
-    Scraper::Apt.crawl!
+    Scraper::Crawler.crawl!
 
     # @scrape.update(started_at: result[:start_time], 
     #         ended_at: result[:stop_time], 

@@ -393,21 +393,25 @@ class Scraper::Apt < Kimurai::Base
     @runner
   end
 
+  def config
+    @config
+  end
+
   def self.runner=(runner=nil)
     @runner = runner
   end
 
-	def self.scrape_property                                     #For Single Property Scrape
-		@scrape_property
-	end
+	# def self.scrape_property                                     #For Single Property Scrape
+	# 	@scrape_property
+	# end
 
 	def self.scraper_name=(name = "Apt")                  
 		@name = name
 	end
 
-	def self.scrape_property=(scrape_property = false)           #For Single Property Scrape
-		@scrape_property = scrape_property
-	end
+	# def self.scrape_property=(scrape_property = false)           #For Single Property Scrape
+	# 	@scrape_property = scrape_property
+	# end
 
   def self.url_hash
     @url_hash
@@ -429,12 +433,12 @@ class Scraper::Apt < Kimurai::Base
     entry ? Scraper::Apt.runner.entry(entry[:entry_id]).link.city.s_id : nil
 	end
 
-  def scrape_property_city_name                 #For Single Property Scrape
-    Scraper::Apt.runner.link.city.name
+  def scrape_property_city_name(scraper)                 #For Single Property Scrape
+    scraper.runner.link.city.name
   end
 
-  def scrape_property_city_id                   #For Single Property Scrape
-    Scraper::Apt.runner.link.city.s_id
+  def scrape_property_city_id(scraper)                   #For Single Property Scrape
+    scraper.runner.link.city.s_id
   end
 
   def start_entry(entry)
@@ -446,11 +450,13 @@ class Scraper::Apt < Kimurai::Base
     l = se.link
     l ? l.update(name: property[:name], s_id: property[:id]) : nil
     se ? se.update(status: "completed", raw_hash: property.to_json) : nil
+
+		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape: se.scrape})
   end
 
 	def is_fetch_floorplan_images(entry)           #For Single Property Scrape                                                    
 		unless entry
-			Scraper::Apt.scrape_property &&  Scraper::Apt.runner.link.fetch_floorplan_images ? true : false
+			self.scrape_property &&  self.runner.link.fetch_floorplan_images ? true : false
 		else 
 			entry[:fetch_floorplan_images]
 		end
@@ -458,13 +464,24 @@ class Scraper::Apt < Kimurai::Base
 
   def parse(response, url:, data: {})
 
-		scrape_property = Scraper::Apt.scrape_property       #For Single Property Scrape
-		entry = nil
+		# scrape_property = Scraper::Apt.scrape_property       #For Single Property Scrape
+		# entry = nil
 
-		unless scrape_property
-			entry = Scraper::Apt.url_hash.find {|u| u[:url] == url}
-			start_entry(entry)
-		end
+		# unless scrape_property
+		# 	entry = Scraper::Apt.url_hash.find {|u| u[:url] == url}
+		# 	start_entry(entry)
+		# end
+
+		urls = Scraper::Apt.url_hash.pluck(:url)
+
+		in_parallel(:parse_property, urls, threads: 10, delay: rand(2..5), config: self.config, data: {scraper: Scraper::Apt, property_scrape: false})
+
+  end
+
+	def parse_property(response, url:, data: {})
+
+		entry = data[:scraper].url_hash.find {|u| u[:url] == url}
+		start_entry(entry) unless data[:property_scrape]
 
     property = {}
 		fp_error = false
@@ -483,12 +500,12 @@ class Scraper::Apt < Kimurai::Base
           response.xpath("//div[@class='propertyAddressContainer']/h2/span[3]/span[2]").text.strip
 
     # City name
-		unless scrape_property
+		unless data[:property_scrape]
 			property[:city] = city_name(entry) 
 			property[:cityId] = city_id(entry)
 		else 
-			property[:city] = scrape_property_city_name         #For Single Property Scrape
-			property[:cityId] = scrape_property_city_id
+			property[:city] = scrape_property_city_name(data[:scraper])         #For Single Property Scrape
+			property[:cityId] = scrape_property_city_id(data[:scraper])
 		end
 
     # State name
@@ -535,7 +552,8 @@ class Scraper::Apt < Kimurai::Base
       # t.xpath(".//span[@class='detailsTextWrapper leaseDepositLabel']/span[3]").text  
       # Floor Plan Image
       # t.xpath(".//div[@class='floorPlanButtonImage']").to_s
-			if is_fetch_floorplan_images(entry)
+			# if is_fetch_floorplan_images(entry)
+			if entry[:fetch_floorplan_images]
 				begin
 					var = fp.xpath(".//div[@class='column2']//div").to_a[0]["data-modelname"]
 					var2 = fp.xpath(".//div[@class='column2']//div").to_a[0]["data-rentalkey"]
@@ -581,15 +599,16 @@ class Scraper::Apt < Kimurai::Base
 
 			puts floor_plan
     end
-		Link.find_by(url: scrape_property ? url : entry[:url]).update(fetch_floorplan_images: false) unless fp_error	
+
+		Link.find_by(url: entry[:url]).update(fetch_floorplan_images: false) unless fp_error	
 		puts property
 
     # puts "HASH BEFORE: #{property}"
     send_item property
     # puts "HASH TO BE SAVED: #{property.to_json}"
-    finish_entry(entry, property) unless scrape_property
+    finish_entry(entry, property) unless data[:property_scrape]
 
-  end
+	end
 
   def all_cities
     result = Scraper::Spark::Client.query(AllCities)
@@ -597,7 +616,6 @@ class Scraper::Apt < Kimurai::Base
     puts "[INFO] All cities fetched successfully."
     return result.original_hash["data"]["allCities"]
   end
-
 
   # def initialize
 
