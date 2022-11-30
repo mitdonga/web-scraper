@@ -474,7 +474,7 @@ class Scraper::Apt < Kimurai::Base
 
 		urls = Scraper::Apt.url_hash.pluck(:url)
 
-		in_parallel(:parse_property, urls, threads: 10, delay: rand(2..5), config: self.config, data: {scraper: Scraper::Apt, property_scrape: false})
+		in_parallel(:parse_property, urls, threads: 5, delay: rand(2..5), config: self.config, data: {scraper: Scraper::Apt, property_scrape: false})
 
   end
 
