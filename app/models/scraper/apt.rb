@@ -389,6 +389,8 @@ class Scraper::Apt < Kimurai::Base
   #               # "https://www.apartments.com/3eleven-chicago-il/66x7f8r/",
   #    ]
 
+	@scrape_history = nil
+
   def self.runner
     @runner
   end
@@ -421,6 +423,14 @@ class Scraper::Apt < Kimurai::Base
     @url_hash = url_hash
   end
 
+	def self.scrape_history
+		@scrape_history
+	end
+
+	def self.scrape_history=(scrape_history = nil)
+		@scrape_history = scrape_history
+	end
+
   def self.start_urls=(urls=[])
     @start_urls = urls
   end
@@ -442,19 +452,23 @@ class Scraper::Apt < Kimurai::Base
   end
 
   def start_entry(entry)
-    entry ? ScrapeEntry.find(entry[:entry_id]).inprogress! : nil
+    entry ? ScrapeEntry.find(entry[:entry_id]) : nil
   end
 
   def finish_entry(entry, property)
     se = ScrapeEntry.find(entry[:entry_id])
+		seh = Scraper::Apt.scrape_history.scrape_entry_histories.find_by(scrape_entry: se)
     l = se.link
     l ? l.update(name: property[:name], s_id: property[:id]) : nil
-    se ? se.update(status: "completed", raw_hash: property.to_json) : nil
+    # se ? se.update(status: "completed", raw_hash: property.to_json) : nil
 
-		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape: se.scrape})
+		seh.update(status: "completed", raw_hash: property.to_json)
+
+		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape_history: seh.scrape_history})
+
   end
 
-	def is_fetch_floorplan_images(entry)           #For Single Property Scrape                                                    
+	def is_fetch_floorplan_images(entry)           # For Single Property Scrape                                                    
 		unless entry
 			self.scrape_property &&  self.runner.link.fetch_floorplan_images ? true : false
 		else 
@@ -464,7 +478,7 @@ class Scraper::Apt < Kimurai::Base
 
   def parse(response, url:, data: {})
 
-		# scrape_property = Scraper::Apt.scrape_property       #For Single Property Scrape
+		# scrape_property = Scraper::Apt.scrape_property       # For Single Property Scrape
 		# entry = nil
 
 		# unless scrape_property
@@ -474,7 +488,7 @@ class Scraper::Apt < Kimurai::Base
 
 		urls = Scraper::Apt.url_hash.pluck(:url)
 
-		in_parallel(:parse_property, urls, threads: 5, delay: rand(2..5), config: self.config, data: {scraper: Scraper::Apt, property_scrape: false})
+		in_parallel(:parse_property, urls, threads: 3, delay: rand(2..5), config: self.config, data: {scraper: Scraper::Apt, property_scrape: false})
 
   end
 
@@ -487,7 +501,12 @@ class Scraper::Apt < Kimurai::Base
 		fp_error = false
 
     # Property Name
-    property[:name] = response.css("h1","propertyName").text.strip
+    property[:name] = response.css("h1","propertyName").text.strip 
+
+		if property[:name] == "Access Denied" || property[:name] == "Can we help you get somewhere else?"
+			p "=========================================  Exiting Due To #{property[:name]}  ============================================="
+			return 0
+		end
     property[:neighborhood] = response.xpath("//a[@class='neighborhood']").text.strip
 
     # Initialize floor_plans

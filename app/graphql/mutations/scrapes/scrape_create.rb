@@ -14,7 +14,7 @@ module Mutations::Scrapes
       def resolve(name:, link_ids:, frequency:, scheduled_at: Time.now)
 
          if Scrape.find_by(name: name).blank?
-            scrape = Scrape.new(name: name, scheduled_at: scheduled_at.to_datetime, status: "scheduled", frequency: frequency)
+            scrape = Scrape.new(name: name, scheduled_at: scheduled_at.to_datetime, frequency: frequency)
             if scrape.save
 
                link_ids.each do |link_id|
@@ -25,14 +25,20 @@ module Mutations::Scrapes
                end
 
                {scrape: scrape,
-                message: "New scrape #{scrape.name} created successfully"}
+                message: "New scrape #{scrape.name} created successfully",
+								errors: []
+							}
             else
                {message: "Error while creating scrape",
-                  errors: scrape.errors.full_messages}
+                  errors: scrape.errors.full_messages
+								}
             end
 
          else
-            {message: "Duplicate scrape name, please enter a different one"}
+            {
+							message: "Duplicate scrape name, please enter a different one",
+							errors: ["Duplicate scrape name, please enter a different one"]
+						}
          end
 
       rescue Exception => e

@@ -6,21 +6,21 @@ module Queries
       type [Types::ScrapeType], null: false
   
       def resolve()
-        Scrape.where(status: "scheduled").order(:name)
+        Scrape.includes(:scrape_entries, :scrape_histories).all
       end
     end
+		
+    # class Scrapes < Queries::BaseQuery
+    #   # argument :status, [Types::StatusType], required: false
 
-    class Scrapes < Queries::BaseQuery
-      argument :status, [Types::StatusType], required: false
-
-      type [Types::ScrapeType], null: false
+    #   type [Types::ScrapeType], null: false
   
-      def resolve(status:["scheduled"])
-        status.blank? ? 
-          Scrape.all.includes(:scrape_entries).references(:scrape_entries) : 
-          Scrape.where(status: status).includes(:scrape_entries).references(:scrape_entries)
-      end
-    end
+    # def resolve()
+    #     status.blank? ? 
+    #       Scrape.includes(:scrape_entries, :scrape_histories).all : 
+    #       Scrape.includes(:scrape_entries, :scrape_histories)
+    #   end
+    # end
 
     class Find < Queries::BaseQuery
       argument :search, String, required: true
@@ -28,8 +28,9 @@ module Queries
       type [Types::ScrapeType], null: false
 
       def resolve(search:)
-        Scrape.where("LOWER(name) like '%#{search.downcase}%'").includes(:scrape_entries).references(:scrape_entries)
+        Scrape.includes(:scrape_entries, :scrape_histories).where("LOWER(name) like '%#{search.downcase}%'")
       end
     end
+
   end
 end

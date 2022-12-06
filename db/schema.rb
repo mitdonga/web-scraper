@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_22_100350) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_03_094859) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,14 +45,35 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_22_100350) do
   create_table "scrape_entries", force: :cascade do |t|
     t.bigint "scrape_id", null: false
     t.bigint "link_id", null: false
-    t.integer "status"
-    t.integer "retries"
     t.string "notes"
-    t.text "raw_hash"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["link_id"], name: "index_scrape_entries_on_link_id"
     t.index ["scrape_id"], name: "index_scrape_entries_on_scrape_id"
+  end
+
+  create_table "scrape_entry_histories", force: :cascade do |t|
+    t.bigint "scrape_history_id", null: false
+    t.bigint "scrape_entry_id", null: false
+    t.text "raw_hash"
+    t.integer "status"
+    t.integer "retries"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scrape_entry_id"], name: "index_scrape_entry_histories_on_scrape_entry_id"
+    t.index ["scrape_history_id"], name: "index_scrape_entry_histories_on_scrape_history_id"
+  end
+
+  create_table "scrape_histories", force: :cascade do |t|
+    t.bigint "scrape_id", null: false
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.integer "status"
+    t.integer "retries"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scrape_id"], name: "index_scrape_histories_on_scrape_id"
   end
 
   create_table "scrapes", force: :cascade do |t|
@@ -60,8 +81,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_22_100350) do
     t.datetime "scheduled_at"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.integer "status"
-    t.integer "retries"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "frequency"
@@ -71,4 +90,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_22_100350) do
   add_foreign_key "links", "cities"
   add_foreign_key "scrape_entries", "links"
   add_foreign_key "scrape_entries", "scrapes"
+  add_foreign_key "scrape_entry_histories", "scrape_entries"
+  add_foreign_key "scrape_entry_histories", "scrape_histories"
+  add_foreign_key "scrape_histories", "scrapes"
 end

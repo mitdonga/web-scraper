@@ -13,22 +13,37 @@ class Scraper::Runner
   end
 
   def run
-    puts "Scheduling Next Scrape: #{@scrape.name}"
+    puts "Scheduling Scrape: #{@scrape.name}"
     # Create and schedule next scrape
-    next_scrape =  @scrape.schedule_next
-    puts "Scheduled at #{next_scrape.scheduled_at}"
-   
-    puts "Starting Scrape: #{@scrape.name}"
-    @scrape.update(started_at: Time.now,
-      retries: @scrape.retries.to_i + 1, 
-      status: "inprogress")
+    # next_scrape =  @scrape.schedule_next
+    new_scrape_history =  @scrape.scrape_histories.create(status: "inprogress", started_at: Time.now)
 
+		@scrape.scrape_entries.each do |se|
+			new_scrape_history.scrape_entry_histories.create(scrape_entry: se, status: "inprogress")
+		end
+
+    puts "========= Scrape History Created ========="
+    puts "Starting Scrape: #{@scrape.name}"
+
+    @scrape.update(started_at: Time.now, scheduled_at: @scrape.next_run_timestamp)
+
+		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape_history: new_scrape_history})
+		
+		# @scrape.scrape_entries.update_all(status: "inprogress")
+
+    Scraper::Apt.scrape_history = new_scrape_history
+		
     result = Scraper::Apt.crawl!
 
     @scrape.update(started_at: result[:start_time], 
-            ended_at: result[:stop_time], 
-            retries: @scrape.retries.to_i + 1, 
-            status: result[:status].to_s == "completed" ? "completed" : "terminated")
+            ended_at: result[:stop_time])
+
+		new_scrape_history.update(started_at: result[:start_time], 
+			ended_at: result[:stop_time], 
+			status: result[:status].to_s == "completed" ? "completed" : "terminated")
+			
+		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape_history: new_scrape_history})
+
   end
 
   def scrape

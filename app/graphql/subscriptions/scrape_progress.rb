@@ -1,7 +1,7 @@
 module Subscriptions
 	class ScrapeProgress < GraphQL::Schema::Subscription
 
-		field :scrape, Types::ScrapeType, null: true
+		field :scrape_history, Types::ScrapeHistoryType, null: true
 
 	end
 end

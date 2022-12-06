@@ -4,7 +4,7 @@ module Mutations::Scrapes
 
       argument :scrape_id, ID, required: true
       argument :name, String, required: false
-      argument :status, Integer, required: false
+      # argument :status, Integer, required: false
       argument :frequency, String, required: false
       argument :scheduled_at, String, required: false
       argument :add_link_ids, [Integer], required: false
@@ -20,11 +20,11 @@ module Mutations::Scrapes
 
          scrape = Scrape.find(args[:scrape_id])
          scrape.name = args[:name] if args[:name]
-         scrape.status = args[:status] if args[:status]
+        #  scrape.status = args[:status] if args[:status]
          scrape.scheduled_at = args[:scheduled_at].to_datetime if args[:scheduled_at]  && args[:scheduled_at].to_datetime
          scrape.frequency = args[:frequency] if args[:frequency]
          if scrape.save
-            if args[:add_link_ids].size > 0
+            if args[:add_link_ids] && args[:add_link_ids].size > 0
                scrape_entries_created = 0
 
                args[:add_link_ids].each do |link_id|
@@ -35,7 +35,7 @@ module Mutations::Scrapes
                end
             end
 
-            if args[:remove_scrape_entry_ids].size > 0
+            if args[:remove_scrape_entry_ids] && args[:remove_scrape_entry_ids].size > 0
                scrape_entries_deleted = 0
 
                args[:remove_scrape_entry_ids].each do |scrape_entry_id|

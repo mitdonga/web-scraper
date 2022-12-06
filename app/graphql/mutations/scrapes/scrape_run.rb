@@ -11,7 +11,7 @@ module Mutations::Scrapes
 
       def resolve(scrape_id:, run_mode:"run")
 
-         runningScrape = Scrape.find_by(status: "inprogress")
+         runningScrape = ScrapeHistory.find_by(status: "inprogress")
 
          if runningScrape.blank?
 
@@ -34,19 +34,17 @@ module Mutations::Scrapes
 									scrape: scrape,
 									errors: []
                }
-               
             else
                return {
                   message: "Scrape: #{scrape_id} not found",
 									errors: ["Scrape: #{scrape_id} not found"]
                }
-
             end
 
          else
             return {
-               message: "Scrape: #{runningScrape.name} is already running",
-							 errors: ["Scrape: #{runningScrape.name} is already running"]
+               message: "Scrape: #{runningScrape.scrape.name} is already running",
+							 errors: ["Scrape: #{runningScrape.scrape.name} is already running"]
             }
          end
 
