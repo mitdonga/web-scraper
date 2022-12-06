@@ -360,7 +360,8 @@ class Scraper::Apt < Kimurai::Base
   @config = {
     # user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
     user_agent: -> { USER_AGENTS.sample },
-    skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
+    # skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound"},
+    skip_request_errors: [{ error: RuntimeError, skip_on_failure: true }],
 		proxy: -> { PROXIES.sample },
 		retry_request_errors: [Net::ReadTimeout],
     session: {
@@ -390,6 +391,12 @@ class Scraper::Apt < Kimurai::Base
   #    ]
 
 	@scrape_history = nil
+
+	def self.close_spider
+    if failed?
+			Scraper::Apt.scrape_history.cancel
+    end
+  end
 
   def self.runner
     @runner
