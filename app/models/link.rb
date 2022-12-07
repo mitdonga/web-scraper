@@ -5,7 +5,7 @@ class Link < ApplicationRecord
 
   has_many :scrape_entries, dependent: :destroy
 
-  after_discard do
-    scrape_entries.update_all(status: 'canceled')
-  end
+  # after_discard do
+  #   scrape_entries.update_all(status: 'canceled')
+  # end
 end

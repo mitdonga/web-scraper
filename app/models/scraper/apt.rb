@@ -396,6 +396,7 @@ class Scraper::Apt < Kimurai::Base
     if failed?
 			Scraper::Apt.scrape_history.cancel
     end
+		Scraper::Apt.scrape_history.scrape_entry_histories.where(status: "inprogress").update_all(status: "canceled")
   end
 
   def self.runner

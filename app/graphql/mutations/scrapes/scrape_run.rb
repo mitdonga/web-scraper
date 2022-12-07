@@ -5,9 +5,9 @@ module Mutations::Scrapes
       argument :scrape_id, Integer, required: true
       argument :run_mode, String, required: false
 
-      field :message, String, null: true
-      field :scrape, Types::ScrapeType, null: true
-      field :errors, [String], null: true
+      field :message, String, null: false
+      field :scrape, Types::ScrapeType, null: false
+      field :errors, [String], null: false
 
       def resolve(scrape_id:, run_mode:"run")
 
@@ -15,7 +15,7 @@ module Mutations::Scrapes
 
          if runningScrape.blank?
 
-            if !Scrape.find_by(id: scrape_id).blank?
+            if Scrape.find_by(id: scrape_id, discard: false)
 
                scrape = Scrape.find(scrape_id)
 
@@ -36,8 +36,8 @@ module Mutations::Scrapes
                }
             else
                return {
-                  message: "Scrape: #{scrape_id} not found",
-									errors: ["Scrape: #{scrape_id} not found"]
+                  message: "Scrape: #{scrape_id} not found Or It is discarded",
+									errors: ["Scrape: #{scrape_id} not found Or It is discarded"]
                }
             end
 

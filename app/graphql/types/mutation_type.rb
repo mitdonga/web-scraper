@@ -17,9 +17,15 @@ module Types
     
     field :scrape_update, mutation: Mutations::Scrapes::ScrapeUpdate, description: "Update scrape", null: false
 
+    field :edit_scrape_links, mutation: Mutations::Scrapes::EditLinks, description: "Add & remove scrape entries (links) from scrape", null: false
+
     field :scrape_run, mutation: Mutations::Scrapes::ScrapeRun, description: "Run scrape_entries from Scrape", null: false
 
     field :scrape_cancel, mutation: Mutations::Scrapes::ScrapeCancel, description: "Cancel running scrape", null: false
+		
+    field :scrape_discard, mutation: Mutations::Scrapes::ScrapeDiscard, description: "Discard or undiscard scrape", null: false
+
+    field :delete_scrape_entry, mutation: Mutations::ScrapeEntries::DeleteScrapeEntry, description: "Delete scrape entry", null: false
 
   end
 end
