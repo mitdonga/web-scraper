@@ -7,6 +7,12 @@ class Scraper::Crawler < Scraper::Apt
 
 	@is_scraping_property = false
 
+	def self.close_spider
+    if failed?
+			puts "=============== Oops! Something went wrong ============="
+    end
+  end
+
 	def self.is_scraping_property
 		@is_scraping_property
 	end
@@ -17,7 +23,8 @@ class Scraper::Crawler < Scraper::Apt
 
 	def parse(response, url:, data: {})
 		urls = Scraper::Crawler.url_hash.pluck(:url)
-		in_parallel(:parse_property, urls, threads: 3, config: self.config, data: {scraper: Scraper::Crawler, property_scrape: true})
+		parse_property(response, url:, data: {scraper: Scraper::Crawler, property_scrape: true})
+		# in_parallel(:parse_property, urls, threads: 1, config: self.config, data: {scraper: Scraper::Crawler, property_scrape: true})
 		Scraper::Crawler.is_scraping_property = false		
 	end
 

@@ -394,9 +394,9 @@ class Scraper::Apt < Kimurai::Base
 
 	def self.close_spider
     if failed?
-			Scraper::Apt.scrape_history.cancel
+			Scraper::Apt.scrape_history&.cancel
     end
-		Scraper::Apt.scrape_history.scrape_entry_histories.where(status: "inprogress").update_all(status: "canceled")
+		Scraper::Apt.scrape_history&.scrape_entry_histories&.where(status: "inprogress").update_all(status: "canceled")
   end
 
   def self.runner
@@ -503,7 +503,11 @@ class Scraper::Apt < Kimurai::Base
 	def parse_property(response, url:, data: {})
 
 		entry = data[:scraper].url_hash.find {|u| u[:url] == url}
-		start_entry(entry) unless data[:property_scrape]
+		# unless entry
+		# 	puts "[ERROR] Entry Not Found"
+		# 	return 0
+		# end
+		# start_entry(entry) unless data[:property_scrape]
 
     property = {}
 		fp_error = false

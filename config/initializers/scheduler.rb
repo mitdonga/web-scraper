@@ -9,6 +9,10 @@ scheduler.every '6h10m' do
   Rake::Task['scrape:run_chicago'].execute
 end
 
+scheduler.every '24h' do
+  Rake::Task['scrape_histories:delete_scrape_histories'].execute
+end
+
 scheduler.cron '0 0 * * *' do
   Rake::Task['scrape:run_austin'].execute
   Rake::Task['scrape:run_houston'].execute
