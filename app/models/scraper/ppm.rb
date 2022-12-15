@@ -439,7 +439,7 @@ class Scraper::Ppm < Kimurai::Base
   # end
 
 end
-Scraper::Ppm.crawl!
+# Scraper::Ppm.crawl!
 
 # Sprape.crawl!
 # Sprape.sign_in
