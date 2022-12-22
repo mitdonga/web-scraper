@@ -159,7 +159,7 @@ class Saver < Kimurai::Pipeline
 
   def self.sign_in
     mutation = <<-'GRAPHQL'
-      mutation ($email: String!, $password: String!) {
+      mutation ($email: ValidString!, $password: ValidString!) {
         signin(input: { email: $email, password: $password }) {
           user {
             name

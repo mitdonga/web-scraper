@@ -108,8 +108,8 @@ module Scraper::Spark
 
   cityCreate = <<-'GRAPHQL'
     mutation (
-      $name: String!,
-      $stateName: String!,
+      $name: ValidString!,
+      $stateName: ValidString!,
       $isVisible: Boolean!
     ) {
       cityCreate(
@@ -127,7 +127,7 @@ module Scraper::Spark
   Kernel.const_defined?(:CreateCity) || Kernel.const_set(:CreateCity, Scraper::Spark::Client.parse(cityCreate))
 
   propertiesWithoutJoinData = <<-'GRAPHQL'
-    query ($cityId: Int, $search: String) {
+    query ($cityId: Int, $search: ValidString) {
       propertiesWithoutJoinData(cityId:$cityId, search:$search, orderBy: [{id:"id"}], onlyAvailable:false, exactMatch: true) {
         totalCount
         edges {
@@ -156,11 +156,11 @@ module Scraper::Spark
 
   propertyCreate = <<-'GRAPHQL'
     mutation (
-        $name: String!,
-        $neighborhood: String!,
-        $zip: String,
+        $name: ValidString!,
+        $neighborhood: ValidString!,
+        $zip: ValidString,
         $cityId: Int!,
-        $address: String
+        $address: ValidString
       ) {
         propertyCreate(
           input: {
