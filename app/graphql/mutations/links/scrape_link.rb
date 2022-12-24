@@ -10,7 +10,6 @@ module Mutations::Links
 				link = Link.find(id)
 				
 				is_scraping_property = Scraper::Crawler.is_scraping_property
-				puts " ============================ #{is_scraping_property} =========================="
 
 				if link
 					Thread.new do

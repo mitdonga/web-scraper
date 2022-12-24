@@ -4,9 +4,9 @@ class Scraper::Runner
 
     if @scrape = get_scrape_info(scrape_id)
       run_mode == 'run' ? populate_entries : populate_entries(false)
-      Scraper::Apt.start_urls = [self.urls.first]
-      Scraper::Apt.url_hash = @urls
-      Scraper::Apt.runner = self
+      Scraper::BaseScraper.start_urls = [self.urls.first]
+      Scraper::BaseScraper.url_hash = @urls
+      Scraper::BaseScraper.runner = self
     else
       raise "Scrape not found..."
     end
@@ -31,9 +31,9 @@ class Scraper::Runner
 		
 		# @scrape.scrape_entries.update_all(status: "inprogress")
 
-    Scraper::Apt.scrape_history = new_scrape_history
+    Scraper::BaseScraper.scrape_history = new_scrape_history
 		
-    result = Scraper::Apt.crawl!
+    result = Scraper::BaseScraper.crawl!
 
     @scrape.update(started_at: result[:start_time], 
             ended_at: result[:stop_time])
@@ -78,7 +78,7 @@ class Scraper::Runner
       # TODO: Temporarily commenting this to run daily scrapes. Uncomment this condition for actual behavior
       if entry.link.kept? #and entry.status != 'completed' and entry.status != 'canceled'
         @entries << entry
-        @urls << {entry_id: entry.id, url: entry.link.url, fetch_floorplan_images: entry.link.fetch_floorplan_images}
+        @urls << {entry_id: entry.id, url: entry.link.url, fetch_floorplan_images: entry.link.fetch_floorplan_images, units_url: entry.link.units_url}
       end
     end
   end

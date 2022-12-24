@@ -10,15 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_07_093029) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_24_084606) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "algos", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "cities", force: :cascade do |t|
     t.string "name"
@@ -32,12 +26,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_07_093029) do
     t.string "url"
     t.integer "s_id"
     t.bigint "city_id", null: false
-    t.bigint "algo_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
     t.boolean "fetch_floorplan_images", default: true
-    t.index ["algo_id"], name: "index_links_on_algo_id"
+    t.string "units_url"
+    t.boolean "success"
+    t.string "notes"
     t.index ["city_id"], name: "index_links_on_city_id"
     t.index ["discarded_at"], name: "index_links_on_discarded_at"
   end
@@ -87,7 +82,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_07_093029) do
     t.boolean "discard", default: false
   end
 
-  add_foreign_key "links", "algos"
   add_foreign_key "links", "cities"
   add_foreign_key "scrape_entries", "links"
   add_foreign_key "scrape_entries", "scrapes"

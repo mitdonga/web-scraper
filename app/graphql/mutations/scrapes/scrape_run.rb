@@ -21,33 +21,37 @@ module Mutations::Scrapes
 
                Thread.new do
                   execution_context = Rails.application.executor.run!
-
-                  run_mode == 'resume' ? scraper = Scraper::Runner.new(scrape_id) : scraper = Scraper::Runner.new(scrape_id, 'resume') 
-                  
+                  scraper = Scraper::Runner.new(scrape_id)
                   scraper.run
                ensure
                   execution_context.complete! if execution_context
                end
 
-               return {
-                  message: "Scrape #{scrape.name} started successfully",
-									scrape: scrape,
-									errors: []
-               }
-            else
-               return {
-                  message: "Scrape: #{scrape_id} not found Or It is discarded",
-									errors: ["Scrape: #{scrape_id} not found Or It is discarded"]
-               }
-            end
+						return {
+							message: "Scrape #{scrape.name} started successfully",
+							scrape: scrape,
+							errors: []
+						}
+					else
+							return {
+								message: "Scrape: #{scrape_id} not found Or It is discarded",
+								errors: ["Scrape: #{scrape_id} not found Or It is discarded"]
+							}
+					end
 
-         else
-            return {
-               message: "Scrape: #{runningScrape.scrape.name} is already running",
-							 errors: ["Scrape: #{runningScrape.scrape.name} is already running"]
-            }
-         end
-
+				else
+					if runningScrape.scrape.started_at < Time.now - 3.hours
+						runningScrape.scrape.cancel
+						return {
+							message: "Running scrape cancelled",
+							errors: []
+						}
+					end
+					return {
+							message: "Scrape: #{runningScrape.scrape.name} is already running",
+							errors: ["Scrape: #{runningScrape.scrape.name} is already running"]
+					}
+				end
       rescue Exception => e
          puts e.message
          puts e.backtrace.join("\n")

@@ -10,8 +10,6 @@ module Types
 
     field :summary, resolver: Queries::Summary::Summary, description: "Returns all summary numbers"
 
-    field :algos, resolver: Queries::Algos::Algos, description: "Returns all algorithms"
-
     field :cities, resolver: Queries::Cities::Cities, description: "Returns all cities"
     field :city, resolver: Queries::Cities::Find, description: "Returns single city searched by name"
 

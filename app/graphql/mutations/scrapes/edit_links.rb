@@ -21,7 +21,7 @@ module Mutations::Scrapes
 					url = url[-1] == "/" ? url : url.insert(-1, "/")
 					existing_link = Link.find_by("url LIKE ?", "%#{url}%")
 					unless existing_link
-						new_link = Link.create(url: url, city_id: city_id, algo_id: 1)
+						new_link = Link.create(url: url, city_id: city_id)
 						puts new_link.url
 						links_created += 1
 						scrape.scrape_entries.create(link: new_link) 

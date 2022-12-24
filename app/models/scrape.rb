@@ -10,12 +10,6 @@ class Scrape < ApplicationRecord
 
   default_scope { order(scheduled_at: :desc) }
 
-  # def self.cancel
-  #   self.status = 'canceled'
-  #   self.save
-  #   scrape_entries.update_all(status: 'canceled')
-  # end
-
   def next_run_timestamp
     Time.now + hours_for(self.frequency).hours
   end
@@ -24,21 +18,11 @@ class Scrape < ApplicationRecord
 		self.scrape_histories.first ? self.scrape_histories.first.status : nil
 	end
 
-  private
+	def links
+		self.scrape_entries.map {|se| {url: se.link.url, units_url: se.link.units_url}}
+	end
 
-  # def initialize_dup(original_scrape)
-  #   super
-  #   self.scheduled_at = original_scrape.next_run_timestamp(true)
-  #   self.started_at = nil
-  #   self.ended_at = nil
-  #   self.status = "scheduled"
-  #   self.retries = 0
-  #   self.save
-  #   original_scrape.scrape_entries.each do |entry|
-  #     new_entry = entry.dup
-  #     self.scrape_entries << new_entry
-  #   end
-  # end
+  private
 
   def hours_for(frequency)
     case frequency

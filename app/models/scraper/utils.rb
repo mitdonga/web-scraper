@@ -40,4 +40,25 @@ module Scraper::Utils
   def parse_aptno(aptno_string)
     aptno_string && aptno_string.length > 0 ? aptno_string.gsub(/Unit|,|\s/, "") : nil
   end
+
+	def parse_rent(rent_string)
+		if rent_string.include? "-"
+			arr = rent_string.split("-")
+			return {rentMin: arr[0].gsub(/\$|,|\s/, "").to_i, rentMax: arr[1].gsub(/\$|,|\s/, "").to_i}
+		elsif rent_string == "Call for details"
+			return {rentMin: 0, rentMax: 0}
+		else
+			return {rentMin: rent_string.gsub(/\$|,|\s/, "").to_i, rentMax: 0}
+		end
+	end
+
+	def parse_movein(movein_string)
+		if movein_string
+			date = movein_string.match(/MoveInDate=[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/).to_a[0].match(/[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/).to_a[0]
+			Date.strptime(date, "%m/%d/%Y")
+		else
+			DateTime.now.to_date
+		end
+	end
+
 end

@@ -8,11 +8,14 @@ module Types
     field :s_id, Integer
     field :city_id, Integer, null: false
     field :city, Types::CityType, null: false
-    field :algo_id, Integer, null: false
     field :fetch_floorplan_images, Boolean, null: false
-    field :algo, Types::AlgoType, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
     field :discarded_at, GraphQL::Types::ISO8601DateTime, null: true
+		field :part_of_scrape, Integer, null: false
+
+		def part_of_scrape
+			ScrapeEntry.where(link_id: object.id).count
+		end
   end
 end

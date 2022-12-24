@@ -4,7 +4,6 @@ module Mutations::Scrapes
 
       argument :scrape_id, ID, required: true
       argument :name, String, required: false
-      # argument :status, Integer, required: false
       argument :frequency, String, required: false
       argument :scheduled_at, String, required: false
       argument :add_link_ids, [Integer], required: false

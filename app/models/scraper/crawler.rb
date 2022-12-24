@@ -3,8 +3,8 @@ require "graphql/client"
 require "graphql/client/http"
 require 'selenium-webdriver'
 
-class Scraper::Crawler < Scraper::Apt
-
+class Scraper::Crawler < Scraper::BaseScraper
+	
 	@is_scraping_property = false
 
 	def self.close_spider
@@ -23,8 +23,10 @@ class Scraper::Crawler < Scraper::Apt
 
 	def parse(response, url:, data: {})
 		urls = Scraper::Crawler.url_hash.pluck(:url)
-		parse_property(response, url:, data: {scraper: Scraper::Crawler, property_scrape: true})
-		# in_parallel(:parse_property, urls, threads: 1, config: self.config, data: {scraper: Scraper::Crawler, property_scrape: true})
+
+		apartments_property_scrape(response, url, {scraper: Scraper::Crawler, property_scrape: true}) if Scraper::Crawler.runner.link.url.include? "apartments.com"
+		rentcafe_property_scrape(response, url, {scraper: Scraper::Crawler, property_scrape: true}) if Scraper::Crawler.runner.link.url.include? "rentcafe.com"
+
 		Scraper::Crawler.is_scraping_property = false		
 	end
 
