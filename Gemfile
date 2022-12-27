@@ -58,6 +58,7 @@ gem 'rufus-scheduler'
 gem 'graphql' #, '1.12.16'
 
 gem 'mina' #, '~> 1.2', '>= 1.2.4'
+gem 'roo'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -74,3 +75,4 @@ end
 
 gem "sidekiq", "~> 6.5"
 gem "selenium-webdriver"
+gem 'apollo_upload_server', '2.1.0'

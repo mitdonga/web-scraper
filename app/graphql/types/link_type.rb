@@ -5,6 +5,7 @@ module Types
     field :id, ID, null: false
     field :name, String
     field :url, String
+    field :units_url, String
     field :s_id, Integer
     field :city_id, Integer, null: false
     field :city, Types::CityType, null: false
