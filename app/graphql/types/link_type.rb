@@ -14,6 +14,8 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
     field :discarded_at, GraphQL::Types::ISO8601DateTime, null: true
 		field :part_of_scrape, Integer, null: false
+		field :success, Boolean, null: true
+		field :notes, String, null: true
 
 		def part_of_scrape
 			ScrapeEntry.where(link_id: object.id).count
