@@ -1,4 +1,5 @@
 class Scrape < ApplicationRecord
+	include Discard::Model
 	# after_update :trigger_scrape_progress
 	validates :name, uniqueness: { case_sensitive: false, message: "Scrape name must be unique" }
 
@@ -19,7 +20,7 @@ class Scrape < ApplicationRecord
 	end
 
 	def links
-		self.scrape_entries.map {|se| {url: se.link.url, units_url: se.link.units_url}}
+		self.scrape_entries.map {|se| se.link }
 	end
 
   private

@@ -42,8 +42,11 @@ class Scraper::PropertyRunner
   end
 
   def populate_entries
-    @url = {url: @link.url, fetch_floorplan_images: @link.fetch_floorplan_images, units_url: @link.units_url}
-
+    @url = {url: @link.url, fetch_floorplan_images: @link.fetch_floorplan_images, units_url: filter_url(@link.units_url)}
   end
 
+	def filter_url(url)
+		return nil if url.nil?
+		url[-1] == "/" ? url.chop : url
+	end
 end

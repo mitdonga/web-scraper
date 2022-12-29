@@ -10,8 +10,10 @@ module Mutations::Scrapes
 		def resolve(scrape_id:, discard:)
 			scrape = Scrape.find(scrape_id)
 
-			if scrape.update(discard: discard)
+			if (discard && scrape.discard) || (!discard && scrape.undiscard)
 				return { scrape: scrape, message: "Scrape #{discard ? "discarded" : "undiscarded"} successfully", errors: [] }
+			else
+				return { message: "Oops, something went wrong!", errors: ["Oops, something went wrong!"] }
 			end
 		rescue Exception => e
 			return { message: "Oops, something went wrong!", errors: [e.message] }

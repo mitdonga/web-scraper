@@ -11,21 +11,18 @@ module Mutations::Scrapes
 
       def resolve(scrape_id:, run_mode:"run")
 
-         runningScrape = ScrapeHistory.find_by(status: "inprogress")
+        runningScrape = ScrapeHistory.find_by(status: "inprogress")
 
-         if runningScrape.blank?
-
-            if Scrape.find_by(id: scrape_id, discard: false)
-
-               scrape = Scrape.find(scrape_id)
-
-               Thread.new do
-                  execution_context = Rails.application.executor.run!
-                  scraper = Scraper::Runner.new(scrape_id)
-                  scraper.run
-               ensure
-                  execution_context.complete! if execution_context
-               end
+        if runningScrape.blank?
+					scrape = Scrape.find(scrape_id)
+          if scrape && scrape.kept?
+						Thread.new do
+							execution_context = Rails.application.executor.run!
+							scraper = Scraper::Runner.new(scrape_id)
+							scraper.run
+						ensure
+							execution_context.complete! if execution_context
+						end
 
 						return {
 							message: "Scrape #{scrape.name} started successfully",

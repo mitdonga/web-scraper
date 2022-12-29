@@ -168,7 +168,7 @@ class Scraper::BaseScraper < Kimurai::Base
     se = ScrapeEntry.find(entry[:entry_id])
 		seh = scraper.scrape_history.scrape_entry_histories.find_by(scrape_entry: se)
     l = se.link
-    l ? l.update(name: property[:name], s_id: property[:id]) : nil
+    l ? l.update(name: property[:name], s_id: property[:id], success: true, notes: nil) : nil
 		seh.update(status: "completed", raw_hash: property.to_json)
 
 		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape_history: seh.scrape_history})

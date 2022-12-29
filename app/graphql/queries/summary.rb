@@ -6,7 +6,7 @@ module Queries
       type Types::SummaryType, null: false
   
       def resolve
-        {city_count: City.count, link_count: Link.kept.count, scrape_count: Scrape.count}
+        {city_count: City.count, link_count: Link.kept.count, scrape_count: Scrape.kept.count}
       end
     end
 

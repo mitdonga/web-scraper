@@ -7,6 +7,22 @@ module Algos::RentcafeAlgo
 
 		property = {}
 		fp_error = false
+		
+		if entry[:units_url].nil?
+			begin
+				units_url = response.xpath("//button[@id='apply-now-top']").first[:onclick].gsub("window.open('",'').gsub("')", '')
+				if units_url.length > 5
+					Link.find_by(url: url).update(units_url: units_url)
+				else
+					Link.find_by(url: url).update(success: false, notes: "No units_url found on primary page")
+					return 
+				end
+			rescue Exception => e
+				Link.find_by(url: url).update(success: false, notes: "No units_url found on primary page")
+				puts e.message
+				return
+			end
+		end
 
 		property[:name] = response.xpath("//h2[@class='property-title']").text
 		property[:neighborhood] = response.xpath("//section[@class='internall-linking-nearby-nhoods']//ul/li[1]").first.text.strip.gsub("Apartments for Rent in ", "")
@@ -71,7 +87,7 @@ module Algos::RentcafeAlgo
 
 		puts property
 
-		request_to :rentcafe_fetch_floorplan_units, url: entry[:units_url], data: { property: property, scraper: data[:scraper], entry: entry, property_scrape: data[:property_scrape], fp_error: fp_error }
+		request_to :rentcafe_fetch_floorplan_units, url: entry[:units_url] ? entry[:units_url] : units_url, data: { property: property, scraper: data[:scraper], entry: entry, property_scrape: data[:property_scrape], fp_error: fp_error }
 	end
 
 	def rentcafe_fetch_floorplan_units(response, url:, data: {}) 

@@ -78,8 +78,13 @@ class Scraper::Runner
       # TODO: Temporarily commenting this to run daily scrapes. Uncomment this condition for actual behavior
       if entry.link.kept? #and entry.status != 'completed' and entry.status != 'canceled'
         @entries << entry
-        @urls << {entry_id: entry.id, url: entry.link.url, fetch_floorplan_images: entry.link.fetch_floorplan_images, units_url: entry.link.units_url}
+        @urls << {entry_id: entry.id, url: entry.link.url, fetch_floorplan_images: entry.link.fetch_floorplan_images, units_url: filter_url(entry.link.units_url)}
       end
     end
   end
+
+	def filter_url(url)
+		return nil if url.nil?
+		url[-1] == "/" ? url.chop : url
+	end
 end

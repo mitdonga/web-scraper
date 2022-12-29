@@ -54,10 +54,13 @@ module Scraper::Utils
 
 	def parse_movein(movein_string)
 		if movein_string
-			date = movein_string.match(/MoveInDate=[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/).to_a[0].match(/[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/).to_a[0]
-			Date.strptime(date, "%m/%d/%Y")
+			date = nil
+			date = movein_string.split("MoveInDate=")[1]
+			# date = movein_string.match(/MoveInDate=[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/)&.to_a[0]&.match(/[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/)&.to_a[0]
+			return Date.strptime(date, "%m/%d/%Y") if date
+			Date.today
 		else
-			DateTime.now.to_date
+			Date.today
 		end
 	end
 
