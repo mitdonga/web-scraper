@@ -103,7 +103,12 @@ module Algos::RentcafeAlgo
 			fp.xpath(".//tbody/tr").each do |tr|
 				unit = {}
 				unit[:aptNo] = tr.xpath(".//td[@data-label='Apartment']").text.gsub("#", '')
-				unit[:price] = tr.xpath(".//td[@data-label='Rent']").text.gsub(/[^0-9]/, '').to_i
+
+				price_range = tr.xpath(".//td[@data-label='Rent']").text.split("-")
+				price = price_range[1] if price_range.size == 2
+				price = price_range[0] if price_range.size == 1
+				unit[:price] = price.gsub(/[^0-9]/, '').to_i
+
 				unit[:size] = tr.xpath(".//td[@data-label='Sq.Ft.']").text.to_i
 				unit[:moveIn] = parse_movein(tr.xpath(".//button").to_a[0]&.attributes["onclick"]&.value)
 				unit[:isAvailable] = !unit[:moveIn].blank?
