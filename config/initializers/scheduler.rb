@@ -27,8 +27,10 @@ scheduler.every '1m' do
     upcoming_scrapes = Scrape.where('scheduled_at < ? AND discard = ?', Time.now, false).reverse
 		if upcoming_scrapes.any?
 			scrape = upcoming_scrapes.first
-			scraper = Scraper::Runner.new(scrape.id)
-			scraper.run
+			if scrape.kept?
+				scraper = Scraper::Runner.new(scrape.id)
+				scraper.run
+			end
 		end
   else
     t = Time.now - running_scrape_history.scrape.started_at 
