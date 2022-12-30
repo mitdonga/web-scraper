@@ -6,7 +6,7 @@ module Queries
       type [Types::ScrapeType], null: false
   
       def resolve()
-        Scrape.kept.includes(:scrape_entries, :scrape_histories).all.reverse
+        Scrape.includes(:scrape_entries, :scrape_histories).all.reverse
       end
     end
 		
