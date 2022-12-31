@@ -4,7 +4,7 @@ class Scraper::Runner
 
     if @scrape = get_scrape_info(scrape_id)
       run_mode == 'run' ? populate_entries : populate_entries(false)
-      Scraper::BaseScraper.start_urls = [self.urls.first]
+      Scraper::BaseScraper.start_urls = [self.urls.sample]
       Scraper::BaseScraper.url_hash = @urls
       Scraper::BaseScraper.runner = self
     else
@@ -34,6 +34,16 @@ class Scraper::Runner
     Scraper::BaseScraper.scrape_history = new_scrape_history
 		
     result = Scraper::BaseScraper.crawl!
+
+		if result[:visits][:requests] == 1 && result[:visits][:responses] == 0
+			puts "[INFO] Retrying scraping - 1"
+			result = Scraper::BaseScraper.crawl!
+		end
+
+		if result[:visits][:requests] == 1 && result[:visits][:responses] == 0
+			puts "[INFO] Retrying scraping - 2"
+			result = Scraper::BaseScraper.crawl!
+		end
 
     @scrape.update(started_at: result[:start_time], 
             ended_at: result[:stop_time])

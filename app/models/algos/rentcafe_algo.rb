@@ -66,18 +66,18 @@ module Algos::RentcafeAlgo
 			floor_plan[:units] = []
 
 			if entry[:fetch_floorplan_images]
-				begin	
+				begin
 					if !fp.xpath(".//div[@class='fp-thumb']/img").text.include? "no_img.jpg"
-						fp_img_title = fp.xpath(".//div[@class='fp-thumb']/img").to_a.first.attributes["title"].value
-						browser.find(:xpath, "//div[@class='fp-thumb']/img[@title='#{fp_img_title}']").click
+						fp_btn_id = fp.xpath(".//div[@class='fp-action']/button[@data-target='#fp-details-modal']").first["id"]
+						browser.find(:xpath, "//button[@id='#{fp_btn_id}']").click
 						sleep 6
 						fp_img_obj = browser.current_response.xpath(".//div[@class='item modal-item']/img")[0]
 						floor_plan[:plan2dLink] = fp_img_obj&.attributes["data-url"]&.value
 						browser.find(:xpath, "//div[@class='fp-details-modal-close']/button[@class='close']").click
 					end
 				rescue Exception => e
-					fp_error = fp_img_title.nil? ? false : true
-					puts e
+					fp_error = fp_btn_id.nil? ? false : true
+					puts e.message
 				end
 			end
 
