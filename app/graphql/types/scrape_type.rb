@@ -15,6 +15,7 @@ module Types
     field :scrape_entries, [Types::ScrapeEntryType], null: false
     field :scrape_histories, [Types::ScrapeHistoryType], null: false
     field :discarded_at, GraphQL::Types::ISO8601DateTime, null: true
+    field :avg_run_time, Integer, null: true
 
     field :scrape_entries_count, Integer
     # field :completed_scrape_entries_count, Integer

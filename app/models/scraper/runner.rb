@@ -45,12 +45,15 @@ class Scraper::Runner
 			result = Scraper::BaseScraper.crawl!
 		end
 
+		scrape_run_time = result[:running_time]
+
     @scrape.update(started_at: result[:start_time], 
-            ended_at: result[:stop_time])
+            ended_at: result[:stop_time], avg_run_time: avg_scrape_time(scrape_run_time, @scrape))
 
 		new_scrape_history.update(started_at: result[:start_time], 
 			ended_at: result[:stop_time], 
-			status: result[:status].to_s == "completed" ? "completed" : "terminated")
+			status: result[:status].to_s == "completed" ? "completed" : "terminated",
+			scrape_result: result, run_time: scrape_run_time)
 			
 		SprapeSchema.subscriptions.trigger(:scrape_progress, {}, {scrape_history: new_scrape_history})
 
@@ -76,7 +79,24 @@ class Scraper::Runner
     @urls.pluck(:url)
   end
 
+	def avg_scrape_time(seconds, scrape)
+		shs = scrape.scrape_histories.limit(10)
+		return seconds unless shs.any?
+		count = 0
+		total_time = 0
+		shs.each do |sh|
+			if sh.run_time.present?
+				total_time += sh.run_time
+				count += 1
+			end
+		end
+		total_time += seconds
+		count += 1
+		return total_time/count
+	end
+
   private
+
   def get_scrape_info(scrape_id)
     Scrape.includes(scrape_entries: [link: :city]).references(:scrape_entries).find_by(id:scrape_id)
   end

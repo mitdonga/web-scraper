@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_28_055616) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_03_095740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,6 +68,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_055616) do
     t.integer "retries"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "run_time"
+    t.json "scrape_result", default: {}
     t.index ["scrape_id"], name: "index_scrape_histories_on_scrape_id"
   end
 
@@ -80,6 +82,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_055616) do
     t.datetime "updated_at", null: false
     t.integer "frequency"
     t.datetime "discarded_at"
+    t.integer "avg_run_time"
   end
 
   add_foreign_key "links", "cities"

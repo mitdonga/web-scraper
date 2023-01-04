@@ -16,6 +16,8 @@ module Types
     field :scrape_entries_count, Integer, null: false
     field :completed_scrape_entries_count, Integer, null: false
     field :canceled_scrape_entries_count, Integer, null: false
+    field :run_time, Integer, null: true
+    field :scrape_result, GraphQL::Types::JSON, null: true
 
     def scrape_entries_count
       object.scrape_entry_histories.count
