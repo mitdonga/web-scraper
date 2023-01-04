@@ -17,6 +17,7 @@ module Types
     field :completed_scrape_entries_count, Integer, null: false
     field :canceled_scrape_entries_count, Integer, null: false
     field :run_time, Integer, null: true
+    field :avg_run_time, Integer, null: true
     field :scrape_result, GraphQL::Types::JSON, null: true
 
     def scrape_entries_count
@@ -33,6 +34,10 @@ module Types
 		
 		def name
 			object.scrape.name
+		end
+
+		def avg_run_time
+			object.scrape.avg_run_time
 		end
   end
 end
