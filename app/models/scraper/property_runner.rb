@@ -20,7 +20,21 @@ class Scraper::PropertyRunner
   def run
     puts "Scraping: #{@link.url}"
 
-    Scraper::Crawler.crawl!
+    result = Scraper::Crawler.crawl!
+
+		if result[:visits][:requests] == 1 && result[:visits][:responses] == 0
+			result = Scraper::Crawler.crawl!
+		end
+
+		if result[:visits][:requests] == 1 && result[:visits][:responses] == 0
+			result = Scraper::Crawler.crawl!
+		end
+
+		if result[:status].to_s == "completed" && result[:events][:requests_errors] == {} && result[:events][:drop_items_errors] == {} && result[:error] == nil && result[:events][:custom] == {}
+			@link.update(success: true, notes: nil)
+		else
+			@link.update(success: false, notes: result[:events][:requests_errors].to_s + "|" + result[:events][:drop_items_errors].to_s + "|" + result[:error].to_s)
+		end
 
   end
 
