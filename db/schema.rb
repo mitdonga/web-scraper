@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_03_095740) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_06_101915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,6 +33,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_03_095740) do
     t.string "units_url"
     t.boolean "success"
     t.string "notes"
+    t.datetime "last_scraped"
     t.index ["city_id"], name: "index_links_on_city_id"
     t.index ["discarded_at"], name: "index_links_on_discarded_at"
   end

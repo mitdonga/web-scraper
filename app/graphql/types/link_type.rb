@@ -13,6 +13,7 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
     field :discarded_at, GraphQL::Types::ISO8601DateTime, null: true
+    field :last_scraped, GraphQL::Types::ISO8601DateTime, null: true
 		field :part_of_scrape, Integer, null: false
 		field :success, Boolean, null: true
 		field :notes, String, null: true

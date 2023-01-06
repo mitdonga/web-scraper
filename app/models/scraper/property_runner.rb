@@ -31,9 +31,9 @@ class Scraper::PropertyRunner
 		end
 
 		if result[:status].to_s == "completed" && result[:events][:requests_errors] == {} && result[:events][:drop_items_errors] == {} && result[:error] == nil && result[:events][:custom] == {}
-			@link.update(success: true, notes: nil)
+			@link.update(success: true, notes: nil, last_scraped: Time.now)
 		else
-			@link.update(success: false, notes: result[:events][:requests_errors].to_s + "|" + result[:events][:drop_items_errors].to_s + "|" + result[:error].to_s)
+			@link.update(last_scraped: Time.now, success: false, notes: result[:events][:requests_errors].to_s + "|" + result[:events][:drop_items_errors].to_s + "|" + result[:error].to_s)
 		end
 
   end
