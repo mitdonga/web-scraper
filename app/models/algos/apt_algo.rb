@@ -74,7 +74,7 @@ module Algos::AptAlgo
       floor_plan[:sqft] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span").to_a[2].text).to_s
       floor_plan[:sqftMin] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span[3]").text)
       floor_plan[:sqftMax] = parse_size(fp.xpath(".//span[@class='detailsTextWrapper']/span[3]").text)
-      floor_plan[:isAvailable] = fp.xpath(".//span[@class='detailsTextWrapper']//span[@class='availabilityInfo']").text
+      floor_plan[:isAvailable] = parse_date(fp.xpath(".//span[@class='detailsTextWrapper']//span[@class='availabilityInfo']").text)
       # Floor Plan Deposit Amount
       floor_plan[:deposit] = parse_amount(fp.xpath(".//span[@class='detailsTextWrapper leaseDepositLabel']/span[2]").text)
 			floor_plan[:plan2dLink] = nil

@@ -184,19 +184,19 @@ module Scraper::SaverMethods
     puts result.original_hash["data"]
   end
 
-  def create_city(city_name, state_name, is_visible=false)
-    result = Scraper::Spark::Client.query(CreateCity, variables: {name: city_name, stateName: state_name, isVisible: is_visible})
+  # def create_city(city_name, state_name, is_visible=false, timeZone="Central Time (US & Canada)")
+  #   result = Scraper::Spark::Client.query(CreateCity, variables: {name: city_name, stateName: state_name, isVisible: is_visible, timeZone: timeZone})
 
-    if result.original_hash["data"]["cityCreate"]["errors"] &&
-      result.original_hash["data"]["cityCreate"]["errors"].size > 0 
-      puts "[ERROR] City was not created - #{city_name}"
-    else
-      puts "[INFO] City created successfully - #{city_name}"
-      @cities = all_cities
-      return result.original_hash["data"]["cityCreate"]["city"]
-    end
-    return nil
-  end
+  #   if result.original_hash["data"]["cityCreate"]["errors"] &&
+  #     result.original_hash["data"]["cityCreate"]["errors"].size > 0 
+  #     puts "[ERROR] City was not created - #{city_name}"
+  #   else
+  #     puts "[INFO] City created successfully - #{city_name}"
+  #     @cities = all_cities
+  #     return result.original_hash["data"]["cityCreate"]["city"]
+  #   end
+  #   return nil
+  # end
 
   def create_floor_plans(floor_plans)
     result = Scraper::Spark::Client.query(FloorPlanMultiCreate, variables: {createFloorPlans: floor_plans})

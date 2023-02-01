@@ -106,25 +106,26 @@ module Scraper::Spark
   GRAPHQL
   Kernel.const_defined?(:FloorPlanMultiCreate) || Kernel.const_set(:FloorPlanMultiCreate, Scraper::Spark::Client.parse(floorPlanMultiCreate))
 
-  cityCreate = <<-'GRAPHQL'
-    mutation (
-      $name: ValidString!,
-      $stateName: ValidString!,
-      $isVisible: Boolean!
-    ) {
-      cityCreate(
-        input: { name: $name, stateName: $stateName, isVisible: $isVisible }
-      ) {
-        city {
-          id
-          name
-        }
-        errors
-        message
-      }
-    }
-  GRAPHQL
-  Kernel.const_defined?(:CreateCity) || Kernel.const_set(:CreateCity, Scraper::Spark::Client.parse(cityCreate))
+  # cityCreate = <<-'GRAPHQL'
+  #   mutation (
+  #     $name: ValidString!,
+  #     $stateName: ValidString!,
+  #     $timeZone: ValidString!,
+  #     $isVisible: Boolean!
+  #   ) {
+  #     cityCreate(
+  #       input: { name: $name, stateName: $stateName, timeZone: $timeZone, isVisible: $isVisible }
+  #     ) {
+  #       city {
+  #         id
+  #         name
+  #       }
+  #       errors
+  #       message
+  #     }
+  #   }
+  # GRAPHQL
+  # Kernel.const_defined?(:CreateCity) || Kernel.const_set(:CreateCity, Scraper::Spark::Client.parse(cityCreate))
 
   propertiesWithoutJoinData = <<-'GRAPHQL'
     query ($cityId: Int, $search: ValidString) {

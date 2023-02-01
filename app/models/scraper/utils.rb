@@ -1,7 +1,13 @@
 module Scraper::Utils
   def parse_date(date_string)
-    return nil if date_string.to_s.strip.downcase == "soon" or date_string.to_s.strip.downcase == "not available" or date_string.to_s.strip.downcase == "unavailable"
-    date_string.to_s.strip.downcase == "now" ? DateTime.now.to_date : (date_string.to_s.to_date < DateTime.now.to_date ? date_string.to_s.to_date + 1.year : date_string.to_s.to_date)
+		begin
+    	return nil if date_string.to_s.strip.downcase == "soon" or date_string.to_s.strip.downcase == "not available" or date_string.to_s.strip.downcase == "unavailable"
+    	return nil if date_string.to_s.strip.downcase.include? "soon" or date_string.to_s.strip.include?  "not available" or date_string.to_s.strip.downcase.include? "unavailable"
+    	return DateTime.now.to_date if date_string.to_s.strip == "" or date_string.to_s.strip.downcase == "available now"
+    	date_string.to_s.strip.downcase == "now" ? DateTime.now.to_date : (date_string.to_s.to_date < DateTime.now.to_date ? date_string.to_s.to_date + 1.year : date_string.to_s.to_date)
+		rescue Exception => e
+			return DateTime.now.to_date
+		end
   end
 
   def parse_size(size_string)
