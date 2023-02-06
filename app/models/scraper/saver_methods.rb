@@ -95,6 +95,8 @@ module Scraper::SaverMethods
         end
       end
 
+			update_floor_plans_size_rent_availability(property)
+
       puts "[INFO] Saved - #{property[:name].upcase}"
       # save_to "saved.json", property, format: :pretty_json
     else
@@ -276,6 +278,16 @@ module Scraper::SaverMethods
     # byebug
     return nil
   end
+
+	def update_floor_plans_size_rent_availability(property, for_available_units_only = true)
+    result = Scraper::Spark::Client.query(UpdateFloorPlansSizeRentAvailability, variables: {propertyId: property[:id], forAvailableUnitsOnly: for_available_units_only})
+		if result.original_hash["data"]["updateFloorPlansSizeRentAvailability"]["errors"] &&
+			result.original_hash["data"]["updateFloorPlansSizeRentAvailability"]["errors"].size > 0
+			puts "[ERROR] " + result.original_hash["data"]["updateFloorPlansSizeRentAvailability"]["message"]
+		else
+			puts "[INFO] " + result.original_hash["data"]["updateFloorPlansSizeRentAvailability"]["message"]
+		end
+	end
 
 	def all_cities
     result = Scraper::Spark::Client.query(AllCities)

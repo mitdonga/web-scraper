@@ -3,16 +3,16 @@ require "graphql/client/http"
 
 module Scraper::Spark
   # Configure GraphQL endpoint using the basic HTTP network adapter.
-  HTTP = GraphQL::Client::HTTP.new("https://api.sparkapt.com") do
+  # HTTP = GraphQL::Client::HTTP.new("https://api.sparkapt.com") do
   # HTTP = GraphQL::Client::HTTP.new("https://sparkgql.compli.tech") do
-  # HTTP = GraphQL::Client::HTTP.new("http://localhost:3002") do
+  HTTP = GraphQL::Client::HTTP.new("http://localhost:3002") do
     def headers(context)
       # Optionally set any HTTP headers
       {
         "User-Agent": "Spark Scraper",
-        "Authorization": "Bearer uKlZL56BlpSFfDcBt8Qx0rj1qtA=--dvCdpMBynTRdSy9w--z8sg1hGRO18Q8T5X/60cDw=="
+        # "Authorization": "Bearer uKlZL56BlpSFfDcBt8Qx0rj1qtA=--dvCdpMBynTRdSy9w--z8sg1hGRO18Q8T5X/60cDw=="
         # "Authorization": "Bearer 1REgnp7QJ8RQaYbWHjjF43s0ypQ=--BQoNVlFqDspfOFoq--8cqrb+mpn+JWaFuYNCgs3Q=="
-        # "Authorization": "Bearer UzhRvizjVCCBtt49V3KKgeZTmNg=--MkhL1VCdnciUSqxv--tB5/ieezgJbABV67XaA4aQ=="
+        "Authorization": "Bearer UzhRvizjVCCBtt49V3KKgeZTmNg=--MkhL1VCdnciUSqxv--tB5/ieezgJbABV67XaA4aQ=="
       }
     end
   end  
@@ -194,6 +194,38 @@ module Scraper::Spark
     }
   GRAPHQL
   Kernel.const_defined?(:PropertyUnitsReset) || Kernel.const_set(:PropertyUnitsReset, Scraper::Spark::Client.parse(propertyUnitsReset))
+
+  updateFloorPlansSizeRentAvailability = <<-'GRAPHQL'
+		mutation (
+				$propertyId: Int!, 
+				$forAvailableUnitsOnly: Boolean
+			) {
+			updateFloorPlansSizeRentAvailability(
+				input: { 
+					propertyId: $propertyId, 
+					forAvailableUnitsOnly: $forAvailableUnitsOnly
+				}) {
+				clientMutationId
+				errors
+				message
+				property {
+					floorPlans{
+						id
+						name
+						availableFrom
+						availableTo
+						sqftMax
+						sqftMin
+						sqft
+						isAvailable
+					}
+					id
+					name 
+				}
+			}
+		}
+  GRAPHQL
+  Kernel.const_defined?(:UpdateFloorPlansSizeRentAvailability) || Kernel.const_set(:UpdateFloorPlansSizeRentAvailability, Scraper::Spark::Client.parse(updateFloorPlansSizeRentAvailability))
 
   allCities = <<-'GRAPHQL'
     query {
