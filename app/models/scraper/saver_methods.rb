@@ -121,7 +121,7 @@ module Scraper::SaverMethods
     # find floor_plan from the spark property
     if floor_plans
       floor_plans.each do |fp|
-        if fp["name"].downcase == floor_plan[:name].downcase && fp["sqft"] == floor_plan[:sqft]
+        if fp["name"].downcase == floor_plan[:name].downcase && fp["sqft"].to_s == floor_plan[:sqft].to_s
           return fp
         end
       end
