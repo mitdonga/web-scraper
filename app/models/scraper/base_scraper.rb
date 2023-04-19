@@ -97,6 +97,9 @@ class Scraper::BaseScraper < Kimurai::Base
         # Clear all cookies before each request, works for all drivers
         clear_cookies: true,
 
+				# Change proxy before each request:
+				change_proxy: true,
+
         # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
         # use this option instead (works for all drivers)
         clear_and_set_cookies: true,
