@@ -15,7 +15,7 @@ module Algos::AptAlgo
     property[:name] = response.css("h1","propertyName").text.strip 
 
 		if property[:name] == "Access Denied" || property[:name] == "Can we help you get somewhere else?"
-			p "=========================================  Exiting Due To #{property[:name]}  ============================================="
+			p "=========================================  Exiting Due To #{property[:name]} URL: #{url} ============================================="
 			return 0
 		end
     property[:neighborhood] = response.xpath("//a[@class='neighborhood']").text.strip
