@@ -3,6 +3,7 @@ class Scraper::Runner
     return unless scrape_id
 
     if @scrape = get_scrape_info(scrape_id)
+			@scrape_entries = get_scrape_entries
       run_mode == 'run' ? populate_entries : populate_entries(false)
       Scraper::BaseScraper.start_urls = [self.urls.sample]
       Scraper::BaseScraper.url_hash = @urls
@@ -18,7 +19,7 @@ class Scraper::Runner
     # next_scrape =  @scrape.schedule_next
     new_scrape_history =  @scrape.scrape_histories.create(status: "inprogress", started_at: Time.now)
 
-		@scrape.scrape_entries.each do |se|
+		@scrape_entries.each do |se|
 			new_scrape_history.scrape_entry_histories.create(scrape_entry: se, status: "inprogress")
 		end
 
@@ -101,14 +102,18 @@ class Scraper::Runner
     Scrape.includes(scrape_entries: [link: :city]).references(:scrape_entries).find_by(id:scrape_id)
   end
 
+	def get_scrape_entries
+		ScrapeEntry.includes(:link).where(scrape_id: @scrape.id).order("links.last_scraped ASC")
+	end
+
   def populate_entries(include_completed = true)
     @entries = []
     @urls = []
-    @scrape.scrape_entries.each do |entry|
+    @scrape_entries.each do |entry|
       # TODO: Temporarily commenting this to run daily scrapes. Uncomment this condition for actual behavior
       if entry.link.kept? #and entry.status != 'completed' and entry.status != 'canceled'
         @entries << entry
-        @urls << {entry_id: entry.id, url: entry.link.url, fetch_floorplan_images: entry.link.fetch_floorplan_images, units_url: filter_url(entry.link.units_url)}
+        @urls << {entry_id: entry.id, url: entry.link.url, fetch_floorplan_images: entry.link.fetch_floorplan_images, units_url: filter_url(entry.link.units_url), last_scraped: entry.link.last_scraped.strftime('%d %b %Y %H:%M:%S')}
       end
     end
   end
