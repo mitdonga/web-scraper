@@ -189,8 +189,9 @@ module Scraper::Spark
   propertyUnitsReset = <<-'GRAPHQL'
     mutation (
         $propertyId: Int!
+        $resetFloorplan: Boolean
     ) {
-      unitMultiUpdateAvailability(input: {propertyId: $propertyId}) {
+      unitMultiUpdateAvailability(input: {propertyId: $propertyId, resetFloorplan: $resetFloorplan}) {
         message
         errors
       }

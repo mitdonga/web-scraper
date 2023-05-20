@@ -8,15 +8,16 @@ module Scraper::SaverMethods
     # puts "[SAVER] Processing #{property}"
 
     # Save property to SPARK backend if floor_plans are available
-    if property[:floorPlans].size > 0
-      # property[:cityId] = city_id(property[:city], property[:state])
-      property_from_spark = find_or_create_property(property)
-      property[:id] = property_from_spark["id"].to_i
-     
-      # Reset existing property units' availability to unavailable
-      reset_units_availability(property[:id])
+		# property[:cityId] = city_id(property[:city], property[:state])
 
-      # find and/or create floor plans for the property
+		# find and/or create floor plans for the property
+		property_from_spark = find_or_create_property(property)
+		property[:id] = property_from_spark["id"].to_i
+
+    if property[:floorPlans].size > 0
+
+			# Reset existing property units' availability to unavailable
+			reset_units_availability(property[:id])
       new_floor_plans = []
       new_units = []
 
@@ -100,6 +101,8 @@ module Scraper::SaverMethods
       puts "[INFO] Saved - #{property[:name].upcase}"
       # save_to "saved.json", property, format: :pretty_json
     else
+			reset_units_availability(property[:id], true) # reset floor plans and units availability
+			update_floor_plans_size_rent_availability(property)
       puts "[INFO] Skipped - #{property[:name].upcase}"
       # save_to "skipped.json", property, format: :pretty_json
     end
@@ -240,8 +243,8 @@ module Scraper::SaverMethods
     return nil
   end
 
-  def reset_units_availability(property_id)
-    result = Scraper::Spark::Client.query(PropertyUnitsReset, variables: {propertyId: property_id.to_i})
+  def reset_units_availability(property_id, reset_floorplan=false)
+		result = Scraper::Spark::Client.query(PropertyUnitsReset, variables: {propertyId: property_id.to_i, resetFloorplan: reset_floorplan})
     if result.original_hash["data"]["unitMultiUpdateAvailability"]["errors"] &&
       result.original_hash["data"]["unitMultiUpdateAvailability"]["errors"].size > 0 
       puts "[ERROR] Units availability was not reset"
