@@ -63,9 +63,11 @@ module Algos::AptAlgo
       # floor_plan[:name] = t.css(".modelName").text.strip
       floor_plan[:name] = fp.xpath(".//span[@class='modelName']").text
       # Floor Plan Min Rent
-      floor_plan[:rentMin] = fp.css(".rentLabel").text.strip.split(" – ")[0].to_s.gsub("$","").gsub(",","").to_i
+			rent_min = fp.css(".rentLabel").text.strip.split(" – ")[0].to_s.gsub("$","").gsub(",","").to_i
+      floor_plan[:rentMin] = rent_min
       # Floor Plan Max Rent
-      floor_plan[:rentMax] = fp.css(".rentLabel").text.strip.split(" – ")[1].to_s.gsub("$","").gsub(",","").to_i
+			rent_max = fp.css(".rentLabel").text.strip.split(" – ")[1].to_s.gsub("$","").gsub(",","").to_i
+      floor_plan[:rentMax] = rent_max > 0 ? rent_max : rent_min
       # Floor Plan Type / Bed
       floor_plan[:bed] = parse_bed(fp.xpath(".//span[@class='detailsTextWrapper']/span").to_a[0].text)
       # Floor Plan Baths
