@@ -87,7 +87,7 @@ class Scraper::BaseScraper < Kimurai::Base
     user_agent: -> { USER_AGENTS.sample },
     # skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound"},
     skip_request_errors: [{ error: RuntimeError, skip_on_failure: true }],
-		# proxy: -> { PROXIES.sample },
+		proxy: -> { PROXIES.sample },
 		retry_request_errors: [Net::ReadTimeout],
     session: {
       before_request: {
@@ -97,7 +97,7 @@ class Scraper::BaseScraper < Kimurai::Base
         clear_cookies: true,
 
 				# Change proxy before each request:
-				# change_proxy: true,
+				change_proxy: true,
 
         # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
         # use this option instead (works for all drivers)
