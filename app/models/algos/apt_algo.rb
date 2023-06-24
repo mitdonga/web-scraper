@@ -140,10 +140,10 @@ module Algos::AptAlgo
     finish_entry(entry, property, data[:scraper]) unless data[:property_scrape]
 
 	rescue Exception => e
-		puts "=========================== Scrping Error ============================"
+		puts "=========================== Scraping Error ============================"
 		puts e
 		puts "Something went wrong with this url: " + url
-		puts "=========================== Scrping Error ============================"
+		puts "=========================== Scraping Error ============================"
 	end
 
 end

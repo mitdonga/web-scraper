@@ -8,8 +8,8 @@ class Validations::LinkValidator < ActiveModel::Validator
 		record.errors.add :base, "Invalid url"        unless valid_url?(url)
 		record.errors.add :base, "Invalid units url"  if units_url != nil && !valid_url?(units_url)
 		
-		if !url.include?("rentcafe.com") && !url.include?("apartments.com")
-			record.errors.add :base, "Invalid url! Allowed domains are apartments.com and rentcafe.com"
+		unless is_valid_domain(url)
+			record.errors.add :base, "Invalid url! This domain is not allowed to scrape"
 		end
 	end
 
@@ -18,4 +18,20 @@ class Validations::LinkValidator < ActiveModel::Validator
 		url_regexp = /\A(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?\z/ix
 		url =~ url_regexp ? true : false
 	end
+
+	private
+	
+	def is_valid_domain(url)
+		allowed_domains = [
+			"rentcafe.com", 
+			"apartments.com", 
+			"missionrockresidential.com",
+			"landmarkconservancy.com"
+		]
+		allowed_domains.each do |domain|
+			return true if url.include? domain
+		end
+		return false
+	end
+
 end

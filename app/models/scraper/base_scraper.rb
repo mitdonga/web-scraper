@@ -9,8 +9,7 @@ end
 
 class Scraper::BaseScraper < Kimurai::Base
   include Scraper::Utils
-	include Algos::AptAlgo
-	include Algos::RentcafeAlgo
+  include Algos::Index
 
   USER_AGENTS = [
     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
@@ -88,7 +87,7 @@ class Scraper::BaseScraper < Kimurai::Base
     user_agent: -> { USER_AGENTS.sample },
     # skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound"},
     skip_request_errors: [{ error: RuntimeError, skip_on_failure: true }],
-		proxy: -> { PROXIES.sample },
+		# proxy: -> { PROXIES.sample },
 		retry_request_errors: [Net::ReadTimeout],
     session: {
       before_request: {
@@ -98,7 +97,7 @@ class Scraper::BaseScraper < Kimurai::Base
         clear_cookies: true,
 
 				# Change proxy before each request:
-				change_proxy: true,
+				# change_proxy: true,
 
         # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
         # use this option instead (works for all drivers)
@@ -197,6 +196,8 @@ class Scraper::BaseScraper < Kimurai::Base
 
 		apartments_property_scrape(response, url, data)   if url.include? "apartments.com"
 		rentcafe_property_scrape(response, url, data) 	  if url.include? "rentcafe.com"
+		missionrock_scrape(response, url, data) 	        if url.include? "missionrockresidential.com"
+		landmark_scrape(response, url, data) 	        		if url.include? "landmarkconservancy.com"
 		
 	end
 

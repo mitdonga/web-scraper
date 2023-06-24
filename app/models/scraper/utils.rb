@@ -29,9 +29,15 @@ module Scraper::Utils
           "bedroom1"
         when "2 beds"
           "bedroom2"
+        when "2 bed"
+          "bedroom2"
         when "3 beds"
           "bedroom3"
+        when "3 bed"
+          "bedroom3"
         when "4 beds"
+          "bedroom4"
+        when "4 bed"
           "bedroom4"
       end
     else 
@@ -67,6 +73,25 @@ module Scraper::Utils
 			Date.today
 		else
 			Date.today
+		end
+	end
+
+	def only_numbers(str)
+		str&.gsub(/\D/, "")
+	end
+
+	def image_url_from_style(str)
+		str ? str.match(/url\("([^"]+)"\)/)[1] : nil
+	end
+
+	def prase_date_mddyyyy(date_string)
+		begin
+    	return nil if date_string.to_s.strip.downcase == "soon" or date_string.to_s.strip.downcase == "not available" or date_string.to_s.strip.downcase == "unavailable"
+    	return nil if date_string.to_s.strip.downcase.include? "soon" or date_string.to_s.strip.include?  "not available" or date_string.to_s.strip.downcase.include? "unavailable"
+    	return DateTime.now.to_date if date_string.to_s.strip == "" or date_string.to_s.strip.downcase.include?("available") or date_string.to_s.strip.downcase.include?("now")
+    	Date.strptime(date_string, '%m/%d/%Y')
+		rescue Exception => e
+			return DateTime.now.to_date
 		end
 	end
 

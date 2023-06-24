@@ -23,9 +23,13 @@ class Scraper::Crawler < Scraper::BaseScraper
 
 	def parse(response, url:, data: {})
 		urls = Scraper::Crawler.url_hash.pluck(:url)
-
-		apartments_property_scrape(response, url, {scraper: Scraper::Crawler, property_scrape: true}) if Scraper::Crawler.runner.link.url.include? "apartments.com"
-		rentcafe_property_scrape(response, url, {scraper: Scraper::Crawler, property_scrape: true}) if Scraper::Crawler.runner.link.url.include? "rentcafe.com"
+		scrape_url = Scraper::Crawler.runner.link.url
+		data = {scraper: Scraper::Crawler, property_scrape: true}
+		
+		apartments_property_scrape(response, url, data) 		if scrape_url.include? "apartments.com"
+		rentcafe_property_scrape(response, url, data) 			if scrape_url.include? "rentcafe.com"
+		missionrock_scrape(response, url, data)	        		if scrape_url.include? "missionrockresidential.com"
+		landmark_scrape(response, url, data) 	        		  if scrape_url.include? "landmarkconservancy.com"
 
 		Scraper::Crawler.is_scraping_property = false		
 	end
