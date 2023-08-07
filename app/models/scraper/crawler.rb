@@ -24,14 +24,17 @@ class Scraper::Crawler < Scraper::BaseScraper
 	def parse(response, url:, data: {})
 		urls = Scraper::Crawler.url_hash.pluck(:url)
 		scrape_url = Scraper::Crawler.runner.link.url
-		data = {scraper: Scraper::Crawler, property_scrape: true}
-		
-		apartments_property_scrape(response, url, data) 		if scrape_url.include? "apartments.com"
-		rentcafe_property_scrape(response, url, data) 			if scrape_url.include? "rentcafe.com"
-		missionrock_scrape(response, url, data)	        		if scrape_url.include? "missionrockresidential.com"
-		landmark_scrape(response, url, data) 	        		  if scrape_url.include? "landmarkconservancy.com"
 
-		Scraper::Crawler.is_scraping_property = false		
+		domain = URI.parse(url).host
+		domain = domain.sub(/^www\./, '') if domain.start_with?('www.')
+		template = Algos::Template.get(domain)
+
+		data = {scraper: Scraper::Crawler, property_scrape: true, template: template}
+
+		correct_algo = Scraper::AlgoMapper.new(url, template).get_algo
+		eval(correct_algo)
+
+		Scraper::Crawler.is_scraping_property = false
 	end
 
 end

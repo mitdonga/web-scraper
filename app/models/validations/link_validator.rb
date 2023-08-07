@@ -22,12 +22,7 @@ class Validations::LinkValidator < ActiveModel::Validator
 	private
 	
 	def is_valid_domain(url)
-		allowed_domains = [
-			"rentcafe.com", 
-			"apartments.com", 
-			"missionrockresidential.com",
-			"landmarkconservancy.com"
-		]
+		allowed_domains = Rails.application.config.allowed_domains
 		allowed_domains.each do |domain|
 			return true if url.include? domain
 		end

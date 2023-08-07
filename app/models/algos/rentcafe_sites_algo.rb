@@ -1,22 +1,22 @@
-module Algos::LandmarkAlgo
+module Algos::RentcafeSitesAlgo
 
-	def landmark_scrape(response, url, data)
-
+	def rentcafe_sites_scrape(response, url, data)
+		template = data[:template]
 		entry = data[:scraper].url_hash.find {|u| u[:url] == url}
 
 		property = {}
 		fp_error = false
 
 		# Property Name
-		property[:name] = "Landmark Conservancy"
+		property[:name] = template[:name]
 
-		property[:neighborhood] = "Downtown"
+		property[:neighborhood] = template[:neighborhood]
 
 		# Initialize floor_plans
 		property[:floorPlans] = []
 
 		# Address
-		property[:address] = "9301 Old Bee Caves Road, Austin, TX 78735"
+		property[:address] = template[:address]
 
 		# City name
 		unless data[:property_scrape]
@@ -28,22 +28,21 @@ module Algos::LandmarkAlgo
 		end
 
 		# State name
-		property[:state] = "Texas"
+		property[:state] = template[:state]
 
 		# zip code
-		property[:zip] = "78735"
+		property[:zip] = template[:zip]
 		count = 1
 		response.xpath("//div[@class='pb-4 mb-2 col-12  col-sm-6 col-lg-4 fp-container']").each do |fp|
-			# debugger if count == 4
+			# debugger if count == 2
 			floor_plan = {}
 			# Floor Plan Name
 			floor_plan[:name] = fp.xpath(".//h2").text.strip
 			# Floor Plan Min Rent
-			rent_min = only_numbers(fp.xpath(".//p[@class='font-weight-bold  mb-1 text-md']")[0].text.strip).to_i
-			floor_plan[:rentMin] = rent_min
+			price = parse_rent(fp.xpath(".//p[@class='font-weight-bold  mb-1 text-md']")[0].text.strip)
+			floor_plan[:rentMin] = price[:rentMin]
 			# Floor Plan Max Rent
-			rent_max = rent_min
-			floor_plan[:rentMax] = rent_max > 0 ? rent_max : rent_min
+			floor_plan[:rentMax] = price[:rentMax]
 			# Floor Plan Type / Bed
 			floor_plan[:bed] = parse_bed(fp.xpath(".//li[@class='list-inline-item mr-2']")[0].text.strip)
 			# Floor Plan Baths
@@ -64,15 +63,14 @@ module Algos::LandmarkAlgo
 				floor_plan[:plan2dLink] = image_link ? image_link : fp.xpath(".//img")[0]&.attributes["src"]&.value	
 			end
 			floor_plan[:units] = []
-
+			data[:floor_plan] = floor_plan
 			if unit_url
-				unit_url = 'https://www.landmarkconservancy.com' + unit_url
-				units = request_to :parse_floor_plan, url: unit_url
+				unit_url = template[:url] + unit_url
+				units = request_to :parse_floor_plan_of_rentcafe_sites, url: unit_url, data: data
 				floor_plan[:units] = units
 			end
 
 			property[:floorPlans] << floor_plan
-
 			puts floor_plan
 			count += 1
 		end
@@ -91,18 +89,22 @@ module Algos::LandmarkAlgo
 		puts "=========================== Scraping Error ============================"
 	end
 
-	def parse_floor_plan(response, url:, data: {})
+	def parse_floor_plan_of_rentcafe_sites(response, url:, data: {})
+		template = data[:template]
+		floor_plan = data[:floor_plan]
 		units = []
-		response.xpath(".//tbody/tr").each do |u|
+		eval(template[:units_loop]).each do |u|
+			
 			unit = {}
 			# Unit number / Appartment Number
-			unit[:aptNo] = u.xpath(".//td[@class='td-card-name']").text.strip.gsub("Apartment: ", "")
+			unit[:aptNo] = eval(template[:aptNo])
 			# Unit rent / price
-			unit[:price] = only_numbers(u.xpath(".//td[@class='td-card-rent']").text.strip).to_i
+			price = eval(template[:unit_price])
+			unit[:price] = price[:rentMax]
 			# Unit Size / Sq Feet
-			unit[:size] = only_numbers(u.xpath(".//td[@class='td-card-sqft']").text.strip).to_i
+			unit[:size] = floor_plan[:sqft].to_i
 			# Unit available date 
-			unit[:moveIn] = prase_date_mddyyyy(u.xpath(".//td[@class='td-card-available']").text.strip.gsub("Date:", ""))
+			unit[:moveIn] = template[:unit_moveIn] ? eval(template[:unit_moveIn]) : Date.today
 
 			unit[:isAvailable] = !unit[:moveIn].blank?
 			units << unit

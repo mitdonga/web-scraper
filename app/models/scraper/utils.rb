@@ -56,11 +56,11 @@ module Scraper::Utils
 	def parse_rent(rent_string)
 		if rent_string.include? "-"
 			arr = rent_string.split("-")
-			return {rentMin: arr[0].gsub(/\$|,|\s/, "").to_i, rentMax: arr[1].gsub(/\$|,|\s/, "").to_i}
-		elsif rent_string == "Call for details"
-			return {rentMin: 0, rentMax: 0}
+			return {rentMin: arr[0].gsub(/\D/, "").to_i, rentMax: arr[1].gsub(/\D/, "").to_i}
+		elsif rent_string.downcase.include? "call"
+			return {rentMin: nil, rentMax: nil}
 		else
-			return {rentMin: rent_string.gsub(/\$|,|\s/, "").to_i, rentMax: 0}
+			return {rentMin: rent_string.gsub(/\D/, "").to_i, rentMax: rent_string.gsub(/\D/, "").to_i}
 		end
 	end
 

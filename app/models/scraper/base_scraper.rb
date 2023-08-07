@@ -187,18 +187,16 @@ class Scraper::BaseScraper < Kimurai::Base
 	def parse(response, url:, data: {})
 
 		urls = Scraper::BaseScraper.url_hash.pluck(:url)
-
 		in_parallel(:map_algo, urls, threads: 3, delay: rand(2..5), config: self.config, data: {scraper: Scraper::BaseScraper, property_scrape: false})
-
   end
 
 	def map_algo(response, url:, data: {})
-
-		apartments_property_scrape(response, url, data)   if url.include? "apartments.com"
-		rentcafe_property_scrape(response, url, data) 	  if url.include? "rentcafe.com"
-		missionrock_scrape(response, url, data) 	        if url.include? "missionrockresidential.com"
-		landmark_scrape(response, url, data) 	        		if url.include? "landmarkconservancy.com"
-		
+		domain = URI.parse(url).host
+		domain = domain.sub(/^www\./, '') if domain.start_with?('www.')
+		template = Algos::Template.get(domain)
+		data[:template] = template
+		correct_algo = Scraper::AlgoMapper.new(url, template).get_algo
+		eval(correct_algo)
 	end
 
 end
