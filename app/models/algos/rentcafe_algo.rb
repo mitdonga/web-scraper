@@ -27,8 +27,6 @@ module Algos::RentcafeAlgo
 				end
 			end
 
-			# debugger
-
 			property[:name] = response.xpath("//h2[@class='property-title']").text
 			property[:neighborhood] = response.xpath("//section[@class='internall-linking-nearby-nhoods']//ul/li[1]")&.first&.text&.strip&.gsub("Apartments for Rent in ", "")
 			property[:address] = response.xpath("//div[@class='property-address']")&.first&.children[1]&.children[0]&.text	+

@@ -44,8 +44,6 @@ module Algos::AptAlgo
     # zip code
     property[:zip] = response.xpath("//div[@class='propertyAddressContainer']/h2/span[3]/span[2]").text.strip
 
-		# debugger
-
 		unavailable_fp_btn = response.xpath("//div[@data-tab-content-id='all']//div[@class='unAvailableFloorPlanBtnSection mortar-wrapper']//button[@class='js-showUnavailableFloorPlansButton']")
 
 		if unavailable_fp_btn.any?

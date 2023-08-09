@@ -11,7 +11,6 @@ module Algos::BrokerPpmApartments
 			property = {}
 			property[:name] = properties[index]
 			property[:address] = properties[index]
-			debugger
 			property[:neighborhood] = "Unknown"
 			property[:floorPlans] = []
 			property[:address] = []
