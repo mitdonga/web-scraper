@@ -20,24 +20,39 @@ module Scraper::Utils
 
   def parse_bed(bed_string)
     if bed_string && bed_string.length > 0
+			return "bedroom1" if bed_string.downcase.include? "one"
+			return "bedroom2" if bed_string.downcase.include? "two"
       case bed_string.downcase
         when "studio"
           "studio"
+
         when "convertible"
           "convertible"
+
         when "1 bed"
           "bedroom1"
+        when "1 bedroom"
+          "bedroom1"
+
         when "2 beds"
           "bedroom2"
         when "2 bed"
           "bedroom2"
+        when "2 bedroom"
+          "bedroom2"
+
         when "3 beds"
           "bedroom3"
         when "3 bed"
           "bedroom3"
+        when "3 bedroom"
+          "bedroom3"
+
         when "4 beds"
           "bedroom4"
         when "4 bed"
+          "bedroom4"
+        when "4 bedroom"
           "bedroom4"
       end
     else 
@@ -66,8 +81,9 @@ module Scraper::Utils
 
 	def parse_movein(movein_string)
 		if movein_string
+			return Date.today if movein_string.strip.downcase.include? "now"
 			date = nil
-			date = movein_string.split("MoveInDate=")[1]
+			date = movein_string.gsub("MoveInDate=", "")
 			# date = movein_string.match(/MoveInDate=[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/)&.to_a[0]&.match(/[0-1]?[0-9]\/[0-3]?[0-9]\/(?:[0-9]{2})?[0-9]{2}/)&.to_a[0]
 			return Date.strptime(date, "%m/%d/%Y") if date
 			Date.today
@@ -95,4 +111,13 @@ module Scraper::Utils
 		end
 	end
 
+	def parse_bed_from_floor_plan(floor_plan)
+		bed = floor_plan.split("/")[0]
+		parse_bed(bed)
+	end
+
+	def parse_bath_from_floor_plan(floor_plan)
+		bath = floor_plan.split("/")[1]
+		parse_amount(bath)
+	end
 end

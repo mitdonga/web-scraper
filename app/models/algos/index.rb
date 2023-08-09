@@ -4,4 +4,5 @@ module Algos::Index
 	include Algos::MissionrockAlgo
 
 	include Algos::RentcafeSitesAlgo
+	include Algos::BrokerPpmApartments
 end
