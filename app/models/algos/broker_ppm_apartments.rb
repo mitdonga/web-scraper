@@ -13,7 +13,7 @@ module Algos::BrokerPpmApartments
 			property[:address] = properties[index]
 			property[:neighborhood] = "Unknown"
 			property[:floorPlans] = []
-			property[:address] = []
+			property[:address] = ""
 
 			unless data[:property_scrape]
 				property[:city] = city_name(entry, data[:scraper]) 
@@ -47,10 +47,10 @@ module Algos::BrokerPpmApartments
 			unit = {}
 			cells.each_with_index do |cell, index|
 				key, value = *cell.split(":")
-				if key == "Available"
-					json[key] = row.xpath(".//td")[index].children.to_a.last.text.strip
+				if key == "Available" || key == "Unit"
+					json[key] = value.split.last.strip
 				else
-					json[key] = value.strip
+					json[key] = value
 				end
 			end
 			unit[:aptNo] = parse_aptno(json["Unit"])
@@ -58,10 +58,11 @@ module Algos::BrokerPpmApartments
 			unit[:size] = parse_size(json["Square Footage"])
 			unit[:moveIn] = parse_movein(json["Available"])
 			unit[:isAvailable] = !unit[:moveIn].blank?
-			unit[:floor_plan] = json["Type"]
+			unit[:floor_plan] = json["Type"].strip
 			units << unit
 		end
 		floor_plans = []
+		units = units.select {|unit| unit[:aptNo] && unit[:aptNo] != "Occupied" }
 		fp_hash = units.group_by {|unit| unit[:floor_plan]}
 		fp_hash.keys.each do |fp|
 			floor_plan = {}

@@ -40,7 +40,7 @@ module Sprape
     config.active_job.queue_adapter = :sidekiq
 
     config.action_cable.url = "ws://localhost:3003/cable"
-    config.action_cable.allowed_request_origins = [ 'http://localhost:3000', 'chrome-extension://cbcbkhdmedgianpaifchdaddpnmgnknn', 'chrome-extension://flnheeellpciglgpaodhkhmapeljopja' ]
+    config.action_cable.allowed_request_origins = [ 'http://localhost:3000', 'http://localhost:3006', 'chrome-extension://cbcbkhdmedgianpaifchdaddpnmgnknn', 'chrome-extension://flnheeellpciglgpaodhkhmapeljopja' ]
 
   end
 end

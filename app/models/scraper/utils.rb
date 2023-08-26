@@ -22,7 +22,7 @@ module Scraper::Utils
     if bed_string && bed_string.length > 0
 			return "bedroom1" if bed_string.downcase.include? "one"
 			return "bedroom2" if bed_string.downcase.include? "two"
-      case bed_string.downcase
+      case bed_string.downcase.strip
         when "studio"
           "studio"
 
