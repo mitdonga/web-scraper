@@ -5,4 +5,5 @@ module Algos::Index
 
 	include Algos::RentcafeSitesAlgo
 	include Algos::BrokerPpmApartments
+	include Algos::LuxuryLivingTableAlgo
 end

@@ -9,7 +9,7 @@ module Mutations::Links
       field :message, String, null: true
       field :errors, [String], null: true
 
-      def resolve(urls: [], city_id:, excel_file:)
+      def resolve(urls: [], city_id:, excel_file: nil)
 
 				city = City.find(city_id)
 				return { message: "City not found Or Invalid input", errors: ["City not found Or Invalid input"] } if city.nil?

@@ -25,8 +25,7 @@ class Scraper::Crawler < Scraper::BaseScraper
 		urls = Scraper::Crawler.url_hash.pluck(:url)
 		scrape_url = Scraper::Crawler.runner.link.url
 
-		domain = URI.parse(url).host
-		domain = domain.sub(/^www\./, '') if domain.start_with?('www.')
+		domain = URI.parse(url).host.gsub("www.", "")
 		template = Algos::Template.get(domain)
 
 		data = {scraper: Scraper::Crawler, property_scrape: true, template: template}

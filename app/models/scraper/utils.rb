@@ -60,6 +60,15 @@ module Scraper::Utils
     end
   end
 
+	def parse_bed_new(bed_string)
+		return "bedroom1" if /(1|one)\s*bed/i.match(bed_string)
+		return "bedroom2" if /(2|two)\s*bed/i.match(bed_string)
+		return "bedroom3" if /(3|three)\s*bed/i.match(bed_string)
+		return "bedroom4" if /(4|four)\s*bed/i.match(bed_string)
+		return "studio" if /studio/i.match(bed_string)
+		return "convertible" if /convert/i.match(bed_string)
+	end
+
   def parse_bath(bath_string)
     bath_string && bath_string.length > 0 ? bath_string.gsub(/bath|baths|,|\s/, "").to_f : nil
   end

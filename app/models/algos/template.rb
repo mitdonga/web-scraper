@@ -2,6 +2,7 @@ module Algos::Template
 	@@templates = 
 	{
 		"805lasalle.com" => {
+			layout: "rentcafe_sites_scrape(response, url, data)",
 			name: "Eight O Five",
 			neighborhood: "River North",
 			url: "https://www.805lasalle.com",
@@ -24,6 +25,7 @@ module Algos::Template
 			unit_moveIn: 'prase_date_mddyyyy(u.xpath(".//td[@class=\'td-card-available\']").text.strip.gsub("Date:", ""))'
 		},
 		"landmarkconservancy.com" => {
+			layout: "rentcafe_sites_scrape(response, url, data)",
 			name: "Landmark Conservancy",
 			neighborhood: "Downtown",
 			url: "https://www.landmarkconservancy.com",
@@ -46,6 +48,7 @@ module Algos::Template
 			unit_moveIn: 'prase_date_mddyyyy(u.xpath(".//td[@class=\'td-card-available\']").text.strip.gsub("Date:", ""))'
 		},
 		"elmstreetplaza.com" => {
+			layout: "rentcafe_sites_scrape(response, url, data)",
 			name: "Elm Street Plaza",
 			neighborhood: "Gold Coast",
 			url: "https://www.elmstreetplaza.com",
@@ -68,6 +71,7 @@ module Algos::Template
 			unit_moveIn: nil,
 		},
 		"asburyplaza.com" => {
+			layout: "rentcafe_sites_scrape(response, url, data)",
 			name: "Asbury Plaza",
 			neighborhood: "River North",
 			url: "https://www.asburyplaza.com",
@@ -89,7 +93,54 @@ module Algos::Template
 			unit_price: 'parse_rent(u.xpath(".//p[@class=\'card-subtitle mb-2 text-muted\']").text.strip)',
 			unit_moveIn: nil
 		},
-
+		"wolfpointwest.com" => {
+			layout: "luxury_living_table_scrape(response, url, data)",
+			name: "Wolf Point West",
+			neighborhood: "River North",
+			url: nil,
+			address: "343 W Wolf Point Plaza, Chicago, IL 60654",
+			state: "Illinois",
+			zip: "60654",
+			floor_plans_loop: nil,
+			fp_name: 'u.xpath(".//td[@class=\'layout\']").to_a[0].text&.strip',
+			fp_rentMin: nil,
+			fp_rentMax: nil,
+			fp_bed: 'parse_bed_new(u.xpath(".//td[@class=\'layout\']").to_a[0].text&.strip)',
+			fp_bath: 'parse_bath(u.xpath(".//td[@class=\'bathrooms hidden-xs\']")[0].text).to_f',
+			fp_sqft: 'only_numbers(response.xpath(".//ul[@class=\'list-inline layout\']/li[3]").text).to_i',
+			fp_sqftMin: nil,
+			fp_sqftMax: nil,
+			fp_is_available: nil,
+			floor_plan_image: 'u.xpath(".//td[@class=\'floorplan hidden-xs\']/a")[0].attributes["href"].value',
+			units_loop: 'response.xpath(".//table/tbody/tr")',
+			aptNo: 'u.xpath(".//td[@class=\'unit\']").to_a[0].text&.strip',
+			unit_price: 'parse_rent(u.xpath(".//td[@class=\'price\']").to_a[0].text&.strip)',
+			unit_moveIn: nil
+		},
+		"wolfpointeast.com" => {
+			layout: "luxury_living_table_scrape(response, url, data)",
+			name: "Wolf Point East",
+			neighborhood: "River North",
+			url: nil,
+			address: "313 W Wolf Point Plaza, Chicago, IL 60654",
+			state: "Illinois",
+			zip: "60654",
+			floor_plans_loop: nil,
+			fp_name: 'u.xpath(".//td[@class=\'layout\']").to_a[0].text&.strip',
+			fp_rentMin: nil,
+			fp_rentMax: nil,
+			fp_bed: 'parse_bed_new(u.xpath(".//td[@class=\'layout\']").to_a[0].text&.strip)',
+			fp_bath: 'parse_bath(u.xpath(".//td[@class=\'bathrooms hidden-xs\']")[0].text).to_f',
+			fp_sqft: 'only_numbers(response.xpath(".//ul[@class=\'list-inline layout\']/li[3]").text).to_i',
+			fp_sqftMin: nil,
+			fp_sqftMax: nil,
+			fp_is_available: nil,
+			floor_plan_image: 'u.xpath(".//td[@class=\'floorplan hidden-xs\']/a")[0].attributes["href"].value',
+			units_loop: 'response.xpath(".//table/tbody/tr")',
+			aptNo: 'u.xpath(".//td[@class=\'unit\']").to_a[0].text&.strip',
+			unit_price: 'parse_rent(u.xpath(".//td[@class=\'price\']").to_a[0].text&.strip)',
+			unit_moveIn: nil
+		},
 	}
 	
 	def self.get(domain)
