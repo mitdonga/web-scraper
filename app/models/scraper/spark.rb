@@ -207,7 +207,8 @@ module Scraper::Spark
 			updateFloorPlansSizeRentAvailability(
 				input: { 
 					propertyId: $propertyId, 
-					forAvailableUnitsOnly: $forAvailableUnitsOnly
+					forAvailableUnitsOnly: $forAvailableUnitsOnly,
+					autoUpdate: true
 				}) {
 				clientMutationId
 				errors
