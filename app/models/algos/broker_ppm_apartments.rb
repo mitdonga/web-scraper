@@ -10,6 +10,11 @@ module Algos::BrokerPpmApartments
 
 			property = {}
 			property[:name] = properties[index]
+
+			# Client don't want some properties to be scraped from broker.ppmapartments.com
+			# Add those properties name in array to skip them scraping
+			next if ["PRG-CONDOS"].include? property[:name].strip
+
 			property[:address] = properties[index]
 			property[:neighborhood] = "Unknown"
 			property[:floorPlans] = []
