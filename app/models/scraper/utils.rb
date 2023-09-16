@@ -62,10 +62,19 @@ module Scraper::Utils
 
 	def parse_bed_new(bed_string)
 		return "bedroom1" if /(1|one)\s*bed/i.match(bed_string)
+		return "bedroom1" if /(1|one)/i.match(bed_string)
+
 		return "bedroom2" if /(2|two)\s*bed/i.match(bed_string)
+		return "bedroom2" if /(2|two)/i.match(bed_string)
+
 		return "bedroom3" if /(3|three)\s*bed/i.match(bed_string)
+		return "bedroom3" if /(3|three)/i.match(bed_string)
+
 		return "bedroom4" if /(4|four)\s*bed/i.match(bed_string)
+		return "bedroom4" if /(4|four)/i.match(bed_string)
+
 		return "studio" if /studio/i.match(bed_string)
+		
 		return "convertible" if /convert/i.match(bed_string)
 	end
 
@@ -128,5 +137,11 @@ module Scraper::Utils
 	def parse_bath_from_floor_plan(floor_plan)
 		bath = floor_plan.split("/")[1]
 		parse_amount(bath)
+	end
+
+	def pattern_match(str, pattern)
+		return '' if str.blank? or pattern.blank?
+		match = str.match(pattern)
+		match[1]
 	end
 end
